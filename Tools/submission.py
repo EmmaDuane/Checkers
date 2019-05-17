@@ -15,13 +15,13 @@ if lang not in ["cpp","java","py","python"]:
     raise Exception("Unsupport language.")
 
 if lang == "cpp":
-    path = "../src/connect-k-cpp"
+    path = "../src/checkers-cpp"
 elif lang == "java":
-    path = "../src/connect-k-java"
+    path = "../src/checkers-java"
 else:
     if lang == 'python':
         lang = "py"
-    path = "../src/connect-k-python"
+    path = "../src/checkers-python"
 
 if not os.path.exists(path):
     raise IOError("Src folder does not exist. Make sure you do not change the file structure.")
