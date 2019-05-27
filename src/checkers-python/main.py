@@ -1,8 +1,21 @@
+"""
+This module is where the game is run from.
+
+We are following the javadoc docstring format which is:
+@param tag describes the input parameters of the function
+@return tag describes what the function returns
+@raise tag describes the errors this function can raise
+"""
+
 from GameLogic import GameLogic
 import sys
 
 from socket import *
 def network_init():
+    """
+    This function sets up a network connection to the ICS servers incase you want to play against another AI connected to the network.
+    @return response, mode: a tuple that returns the response from the ICS servers, and sends a string with either host or client to indicate whether this AI is hosting the game session or joining a session.
+    """
     serverPort = 12002
     clientSocket = socket(AF_INET, SOCK_STREAM)
     clientSocket.connect(('syn2-1.ics.uci.edu', serverPort))

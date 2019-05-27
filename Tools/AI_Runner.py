@@ -1,5 +1,6 @@
 import sys
-sys.path.append("../checkers-python")
+sys.path.append("../../checkers-python")
+sys.path.append("../../checkers-python/AI_Extensions")
 from GameLogic import GameLogic
 
 

@@ -1,3 +1,15 @@
+"""
+This module has the Board Class which is the class which handles the current board.
+
+We are following the javadoc docstring format which is:
+@param tag describes the input parameters of the function
+@return tag describes what the function returns
+@raise tag describes the errors this function can raise
+"""
+
+
+import copy
+import re
 from Move import Move
 class InvalidMoveError(Exception):
     pass
@@ -8,8 +20,20 @@ class InvalidParameterError(Exception):
 import Checker
 
 class Board:
+    """
+    This class describes Board
+    """
     opponent = {"W": "B", "B": "W"}
     def __init__(self, row, col, k):
+        """
+        Intializes board. Adds the white checkers and black checkers to the board based on the board variables (M,N,P,Q)
+        provided. N*P should even to ensure that both players get the same no of checker pieces at the start
+        @param row: no of rows in the board
+        @param col: no of columns in the board
+        @param k: no of rows to be filled with checker pieces at the start
+        @return :
+        @raise :
+        """
         self.row = row
         self.col = col
         self.k = k
@@ -23,6 +47,13 @@ class Board:
         self.white_count = 0
 
     def initialize_game(self):
+        """
+        Intializes game. Adds the white checkers and black checkers to the board based on the board variables (M,N,P,Q)
+        when the game starts
+        @param :
+        @return :
+        @raise :
+        """
         self.check_initial_variable()
         for i in range(0, self.k):
             for j in range(0, self.col):
@@ -48,10 +79,11 @@ class Board:
 
     def make_move(self, move, turn):
         """
-
-        :param move: Move object
-        :param turn: str or int
-        :return:
+        Makes Move on the board
+        @param move: Move object provided by the StudentAI, Uses this parameter to make the move on the board
+        @param turn: this parameter tracks the current turn. either player 1 (white) or player 2(black)
+        @return:
+        @raise InvalidMoveError: raises this objection if the move provided isn't valid on the current board
         """
         if type(turn) is int:
             if turn == 1:
@@ -98,20 +130,36 @@ class Board:
             else:
                 for failed_capture in capture_positions:
                     # recover failed captures
-                    self.board[failed_capture[0]][failed_capture[1]] = Checker.Checker(self.opponent[turn], [failed_capture[0], failed_capture[1]])
+                    self.board[failed_capture[0]][failed_capture[1]] = Checker.Checker(self.opponent[turn],[failed_capture[0],failed_capture[1]])
                 for failed_position in past_positions:
                     # recover failed moves
-                    self.board[failed_position[0]][failed_position[1]] = Checker.Checker(".", [failed_position[0], failed_position[1]])
-                self.board[ultimate_start[0]][ultimate_start[1]] = Checker.Checker(turn, [ultimate_start[0], ultimate_start[1]])
+                    self.board[failed_position[0]][failed_position[1]] = Checker.Checker(".", [failed_position[0],failed_position[1]])
+                self.board[ultimate_start[0]][ultimate_start[1]] = Checker.Checker(turn, [ultimate_start[0],ultimate_start[1]])
                 print(move,turn)
                 raise InvalidMoveError
 
 
     def is_in_board(self,pos_x,pos_y):
+        """
+        Checks if the coordinate provided is in board. Is an internal function
+        @param pos_x: x coordinte of the object to check for
+        @param pos_y: y coordinte of the object to check for
+        @return: a bool to describe if object is in the board or not
+        @raise:
+        """
         return pos_x >= 0 and pos_x < self.row and pos_y >= 0 and pos_y < self.col
 
     def is_valid_move(self, chess_row, chess_col, target_row, target_col, turn):
-
+        """
+        checks if a proposed move is valid or not.
+        @param chess_row: row of the object whose move we are checking
+        @param chess_col: col of the object whose move we are checking
+        @param target_row: row where the object would end up
+        @param target_col: col where the object would end up
+        @param turn: tracks turn player 1(white) or player 2(black)
+        @return: a bool which is True if valid, False otherwise
+        @raise :
+        """
         if target_row < 0 or target_row >= self.row or target_col < 0 or target_col >= self.col:
         # move out of the board
             return False
@@ -149,6 +197,12 @@ class Board:
 
 
     def get_all_possible_moves(self,color):
+        """
+        this function returns the all possible moves of the player whose turn it is
+        @param color: color of the player whose turn it is
+        @return result: a list of Move objects which describe possible moves
+        @raise :
+        """
         result = []
         if type(color) is int:
             if color == 1:
@@ -161,7 +215,7 @@ class Board:
             for col in range(self.col):
                 checker = self.board[row][col]
                 if checker.color == color:
-                    moves,is_capture = checker.get_possible_moves(self)
+                    moves,is_capture = checker.get_possible_moves(self) # calls checker class's get possible moves and filters those moves down
                     if temp == 0 and not is_capture:
                         if moves:
                             result.append(moves)
@@ -183,17 +237,29 @@ class Board:
         return result
 
     def is_win(self):
+        """
+        this function tracks if any player has won
+        @param :
+        @param :
+        @return :
+        @raise :
+        """
         W = True
         B = True
-        for row in range(self.row):
-            for col in range(self.col):
-                checker = self.board[row][col]
-                if checker.color == 'W':
-                    W = False
-                elif checker.color == 'B':
-                    B = False
-                if not W and not B:
-                    return 0
+        if len(self.get_all_possible_moves(1)) == 0:
+            B = False
+        elif len(self.get_all_possible_moves(2)) == 0:
+            W = False
+        else:
+            for row in range(self.row):
+                for col in range(self.col):
+                    checker = self.board[row][col]
+                    if checker.color == 'W':
+                        W = False
+                    elif checker.color == 'B':
+                        B = False
+                    if not W and not B:
+                        return 0
         if W:
             return 1
         elif B:
@@ -202,11 +268,17 @@ class Board:
             return 0
 
     def show_board(self,fh=None):
+        """
+        prints board to console or to file
+        @param fh: file object, incase we need to print to file
+        @return :
+        @raise :
+        """
         print("   ",end="",file=fh)
         print(*range(0,self.col),sep="  ",file=fh)
         # index for debugging easily
         for i, row in enumerate(self.board):
-            print(i, end="")
+            print(i, end="",file=fh)
             # index for debugging easily
             for j, col in enumerate(row):
                 king = self.board[i][j].is_king
@@ -215,11 +287,17 @@ class Board:
                 else:
                     print("%3s" % str(self.board[i][j].get_color()).lower(), end = "",file=fh)
                 # print("%3s" % str(self.board[i][j]), end="")
-            print()
+            print(file=fh)
         print('----------------------',file=fh)
 
     def check_initial_variable(self):
-        # Recently changed: return false is changed to raising exceptions
+        """
+        Checks the integrity of the initial board variables provided (M,N,P,Q)
+        @param :
+        @param :
+        @return :
+        @raise InvalidParameterError: raises this exception if there is a problem with the provided variables
+        """
         # Q > 0
         if self.row - 2 * self.k <= 0:
             raise  InvalidParameterError("Q <= 0")

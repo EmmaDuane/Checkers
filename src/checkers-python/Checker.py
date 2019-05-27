@@ -1,17 +1,30 @@
+"""
+This module has the Checkers Class that describes checker pieces.
+
+We are following the javadoc docstring format which is:
+@param tag describes the input parameters of the function
+@return tag describes what the function returns
+@raise tag describes the errors this function can raise
+"""
 from Move import Move
 from copy import deepcopy
 class Checker():
     def __init__(self, color, location):
+        """
+        Initializes Checker pieces
+        @param color: stores the color of this checker
+        @param location: has the location of this checker
+        """
         self.color = color
-        self.row = location[0]
-        self.col = location[1]
-        #self.
-        self.is_king = False
+        self.row = location[0] # stores the row of the piece
+        self.col = location[1] # stores the col of the piece
+        self.is_king = False # stores if this piece is king or not
 
     def get_possible_moves(self,board):
         """
-        Get all possible moves of this checker at this position
-        :return: move
+        Get all possible moves of this checker. These moves may be filtered in the context of the board.
+        @param board: has the current state of the board
+        @return result: a list of Move objects that describes the possible move for this checker
         """
         # determine possible move directions from the color of this checker
         # explore_direction: a list of tuples of coordinates of possible move
@@ -48,6 +61,16 @@ class Checker():
         return result, is_capture
 
     def binary_tree_traversal(self,pos_x,pos_y,multiple_jump,board,direction,move):
+        """
+        Internal helper function for get_possible_moves. Students should not use this.
+        This function handles the move chain if multiple jumps are possible for this checker piece
+        @param pos_x: x coordinate of the checker piece whose move is being explored
+        @param pos_y: y coordinate of the checker piece whose move is being explored
+        @param multiple_jump: a list of the current multiple jump moves found
+        @param board: current state of the board
+        @param direction: current direction to explore in
+        @param move: current move chain being explored
+        """
         for i in direction:
             temp_x, temp_y = pos_x + i[0], pos_y + i[1]
             if board.is_in_board(temp_x,temp_y) and board.board[temp_x][temp_y].color == board.opponent[self.color]\
@@ -100,15 +123,29 @@ class Checker():
     #     pass
 
     def become_king(self):
+        """
+        Changes checker piece to king
+        """
         self.is_king = True
 
     def become_man(self):
+        """
+        Changes to regular piece
+        """
         self.is_king = False
 
     def get_color(self):
+        """
+        Returns 'W' or 'B' for the color of this checker piece
+        @return self.color: variable with the color of this piece
+        """
         return self.color
 
     def get_location(self):
+        """
+        Returns a tuple of row and column of this piece
+        @return self.row, self.col: row coordinate variable and col coordinate variable
+        """
         return self.row, self.col
 
 

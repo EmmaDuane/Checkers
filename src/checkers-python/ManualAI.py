@@ -1,16 +1,42 @@
+"""
+This module houses the ManualAI which is used when running the shell with the manual run options.
+
+We are following the javadoc docstring format which is:
+@param tag describes the input parameters of the function
+@return tag describes what the function returns
+@raise tag describes the errors this function can raise
+"""
+
 from Move import Move
 from BoardClasses import Board
 
 class ManualAI():
+    """
+    This class describes the ManualAI.
+    """
     def __init__(self,col,row,k):
+        """
+        Intializes manualAI
+        @param row: no of rows in the board
+        @param col: no of columns in the board
+        @param k: no of rows to be filled with checker pieces at the start
+        @return :
+        @raise :
+        """
         self.col = col
         self.row = row
         self.k = k
         self.board = Board(col,row,k)
         self.board.initialize_game()
         self.color = 2
-        self.oppoent = {1:2,2:1}
+        self.oppoent = {1:2,2:1} # to switch turns after each turn
     def get_move(self,move):
+        """
+        get_move function for manualAI called from the gameloop in the main module.
+        @param move: A Move object describing the move.
+        @return res_move: A Move object describing the move manualAI wants to make. This move is basically console input.
+        @raise :
+        """
         if move is not None:
             self.board.make_move(move,self.oppoent[self.color])
         else:
@@ -23,7 +49,7 @@ class ManualAI():
                     for j, move in enumerate(checker_moves):
                         print(j,":",move,end=", ")
                     print("]")
-                index,inner_index = map(lambda x: int(x), input("Select Move {int} {int}: ").split())
+                index,inner_index = map(lambda x: int(x), input("Select Move {int} {int}: ").split()) # input is from console is handled here.
                 res_move = moves[index][inner_index]
             except KeyboardInterrupt:
                 raise KeyboardInterrupt
