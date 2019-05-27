@@ -1,9 +1,9 @@
 from BoardClasses import *
 import sys
-sys.path.append("./AI_Extensions")
-from Network_AI import NetworkAI
-from IOAI import IOAI
-from RandomAI import StudentAI
+sys.path.append("./AI_Extensions/")
+from AI_Extensions.Network_AI import NetworkAI
+from AI_Extensions.IOAI import IOAI
+from AI_Extensions.RandomAI import StudentAI
 from ManualAI import ManualAI
 
 class GameLogic:
