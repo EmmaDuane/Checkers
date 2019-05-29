@@ -1,9 +1,9 @@
 from BoardClasses import *
 import sys
-sys.path.append("./AI_Extensions/")
-from AI_Extensions.Network_AI import NetworkAI
-from AI_Extensions.IOAI import IOAI
-from AI_Extensions.RandomAI import StudentAI
+sys.path.append("./AI_Extensions")
+from Network_AI import NetworkAI
+from IOAI import IOAI
+from StudentAI import StudentAI
 from ManualAI import ManualAI
 
 class GameLogic:
@@ -24,7 +24,17 @@ class GameLogic:
         board.initialize_game()
         board.show_board(fh)
         while True:
-            move = self.ai_list[player-1].get_move(move)
+            try:
+                move = self.ai_list[player-1].get_move(move)
+            except:
+                import traceback
+                print("Player",player,"crashed!",file=fh)
+                traceback.print_exc(file=fh)
+                if player == 1:
+                    winPlayer = 2
+                else:
+                    winPlayer = 1
+                break
             try:
                 board.make_move(move,player)
             except InvalidMoveError:

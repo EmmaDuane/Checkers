@@ -78,3 +78,7 @@ if __name__ == "__main__":
 
     elif mode == 't':
         main.Run(mode=mode)
+
+    elif mode == 'l':
+        ai_path_1,ai_path_2 =  sys.argv[5],sys.argv[6]
+        main.Run(mode=mode,ai_path_1=ai_path_1,ai_path_2=ai_path_2,time=1200)

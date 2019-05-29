@@ -24,6 +24,8 @@ class IOAI():
 
     def get_move(self,move):
         self.communicator.send(str(move).encode())
-        ai_move = self.communicator.recv()
+        ai_move,err = self.communicator.recv(return_stderr=True)
+        if err:
+            raise Exception(err.decode())
         ai_move = ai_move.decode().split("\n")[-1].rstrip()
         return Move.from_str(ai_move)
