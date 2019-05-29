@@ -21,11 +21,9 @@ class IOAI():
         command = get_prefix(command)
         command = command + " " + str(col) + " " + str(row) + " " + str(k) + " " + " t"
         self.communicator = Communicator(command,kwargs['time'])
-        self.already_time = 0
 
     def get_move(self,move):
         self.communicator.send(str(move).encode())
-        ai_move, at = self.communicator.recv(time_already=self.already_time)
-        self.already_time += at
+        ai_move = self.communicator.recv()
         ai_move = ai_move.decode().split("\n")[-1].rstrip()
         return Move.from_str(ai_move)
