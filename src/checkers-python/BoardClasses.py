@@ -261,9 +261,9 @@ class Board:
                     if not W and not B:
                         return 0
         if W:
-            return 1
-        elif B:
             return 2
+        elif B:
+            return 1
         else:
             return 0
 

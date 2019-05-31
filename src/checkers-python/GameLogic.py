@@ -99,6 +99,7 @@ class GameLogic:
                 self.ai_list.append(
                     StudentAI(self.col, self.row, self.k))
             else:
+                print("First AI is RandomAI")
                 self.ai_list.append(
                     StudentAI(self.col, self.row, self.k))
                 self.ai_list.append(
