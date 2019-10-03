@@ -10,11 +10,11 @@
 class GameLogic
 {
 private:
-	int col, row, k,order;
+	int col, row, p,order;
 	string mode;
-	vector<AI*> aiList;
+	vector<AI*> *aiList;
 public:
-	GameLogic(int col,int row,int,string mode,int order);
+	GameLogic(int col,int row,int p,string mode,int order);
 	void Manual();
 	void TournamentInterface();
 	void Run();

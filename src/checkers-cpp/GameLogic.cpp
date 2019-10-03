@@ -1,12 +1,13 @@
 #include "GameLogic.h"
 
-GameLogic::GameLogic(int col, int row, int k, string mode,int order)
+GameLogic::GameLogic(int col, int row, int p, string mode,int order)
 {
 	this->col = col;
 	this->row = row;
-	this->k = k;
+	this->p = p;
 	this->mode = mode;
 	this->order = order;
+	this->aiList = new vector<AI*>();
 }
 
 void GameLogic::Manual()
@@ -15,11 +16,13 @@ void GameLogic::Manual()
 	int winPlayer = 0;
 	bool init = true;
 	Move move;
-	Board board(col, row, k);
-    board.initializeGame();
+	Board board(col, row, p);
+        board.initializeGame();
+        board.showBoard();
 	while (true)
 	{
-		move = aiList[player - 1]->GetMove(move);
+		move = ((*aiList)[player - 1])->GetMove(move);
+		cout << move.toString() << endl;
 		try
 		{
 			board.makeMove(move, player);
@@ -52,7 +55,7 @@ void GameLogic::Manual()
 
 void GameLogic::TournamentInterface()
 {
-	StudentAI ai(col, row, k);
+	StudentAI ai(col, row, p);
 	while (true)
 	{
 		string instr;
@@ -66,20 +69,18 @@ void GameLogic::Run()
 {
 	if (mode == "m" or mode == "manual")
 	{
-        AI* studentai = new StudentAI(col, row, k);
-        AI* manualai = new ManualAI(col, row, k);
-	    if (order == 0)
-        {
-            aiList.push_back(manualai);
-            aiList.push_back(studentai);
-        }
-        else
-        {
-            aiList.push_back(studentai);
-            aiList.push_back(manualai);
-
-        }
-
+        	AI* studentai = new StudentAI(col, row, p);
+        	AI* manualai = new ManualAI(col, row, p);
+		if (order == 1)
+        	{
+            		aiList->push_back(manualai);
+            		aiList->push_back(studentai);
+        	}
+        	else
+        	{
+            		aiList->push_back(studentai);
+          	  	aiList->push_back(manualai);
+        	}
 
 		Manual();
 	}
@@ -93,8 +94,9 @@ void GameLogic::Run()
 
 GameLogic::~GameLogic()
 {
-	for (int i = 0; i < aiList.size(); i++)
+	while(!aiList->empty())
 	{
-		delete aiList[i];
+		delete aiList->back();
+		aiList->pop_back();
 	}
 }

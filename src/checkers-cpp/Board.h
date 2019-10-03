@@ -16,15 +16,15 @@ class Board {
 public:
 	vector<vector<Checker> > board;
     static const map<string , string> opponent;
-	int col, row, k, blackCount,whiteCount;
+	int col, row, p, blackCount,whiteCount,tieCount,tieMax;
 	Board();
-	Board(int col, int row,int k);
+	Board(int col, int row,int p);
     void initializeGame ();
     bool isInBoard(int pos_x,int pos_y);
     bool isValidMove(int chess_row, int chess_col, int target_row, int target_col, string turn);
     void checkInitialVariable();
-    vector<vector<Move>> getAllPossibleMoves(string color);
-    vector<vector<Move>> getAllPossibleMoves(int player);
+    vector<vector<Move> > getAllPossibleMoves(string color);
+    vector<vector<Move> > getAllPossibleMoves(int player);
     void makeMove(const Move& move,int player);
 	int isWin();
 	void showBoard();

@@ -10,11 +10,11 @@ public class Direction {
     										addElement(new Position(-1,-1)); 
     										addElement(new Position(-1,1));
     									}});
-    	put("W", new Vector<Position> () {{
+    	put("B", new Vector<Position> () {{
 											addElement(new Position(1,-1)); 
 											addElement(new Position(1,1));
 										}});
-    }};;
+    }};
     
     public Vector<Position> at(String index)
     {

@@ -8,7 +8,7 @@ class ManualAI : public AI
 {
 public:
     Board board;
-	ManualAI(int col, int row, int k);
+	ManualAI(int col, int row, int p);
 	virtual Move GetMove(Move board);
 };
 

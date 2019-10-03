@@ -1,7 +1,19 @@
 import java.util.HashMap;
 import java.util.Vector;
-import java.lang.Math; 
+import java.lang.Math;
 
+/*
+This module has the Board Class which is the class which handles the current board.
+
+We are following the javadoc docstring format which is:
+@param tag describes the input parameters of the function
+@return tag describes what the function returns
+@throws tag describes the errors this function can raise
+ */
+
+/**
+ * This class describes Board
+ */
 public class Board {
 	static final HashMap<String, String> opponent = new HashMap<String,String> () {{
     	put("W","B");
@@ -9,44 +21,66 @@ public class Board {
     	}};
     int col = 0;
     int row = 0;
-    int k = 0;
+    int p = 0;
+    int tieMax = 40;
+    int tieCount = 0;
 	Vector<Vector<Checker> > board;
     int blackCount = 0;
     int whiteCount = 0;
-    
-    public Board(int col, int row,int k) {
+
+    /**
+     * Intializes board:
+     *      M = number of rows
+     *      N = number of columns
+     *      P = number of rows containing initial checker pieces
+     * Adds the white checkers and black checkers to the board based on the board variables (M,N,P)
+     * provided. N*P should be even to ensure that both players get the same number of checker pieces at the start
+     *
+     * @param row number of rows in the board
+     * @param col number of columns in the board
+     * @param p number of rows to be filled with checker pieces at the start
+     */
+    public Board(int col, int row,int p) {
     	this.col = col;
         this.row = row;
-        this.k = k;
+        this.p = p;
         this.blackCount = 0;
         this.whiteCount = 0;
         this.board = new Vector<Vector<Checker> >(row);
         for (int i = 0;i < row; ++i)
         {
+            this.board.add(new Vector<Checker>());
             for (int j = 0;j < col;++j)
             {
                 this.board.get(i).add((new Checker(".",i,j)));
             }
         }
     }
-    
+
+    /**
+     * Copy constructor
+     * @param b another board to copy
+     */
     public Board(Board b) {
     	this.col = b.col;
     	this.row = b.row;
-    	this.k = b.k;
+    	this.p = b.p;
     	this.blackCount = b.blackCount;
     	this.whiteCount = b.whiteCount;
     	this.board = new Vector<Vector<Checker> >(row);
     	for (int i = 0;i < row; ++i)
         {
+            this.board.add(new Vector<Checker>());
             for (int j = 0;j < col;++j)
             {
                 this.board.get(i).add((new Checker(b.board.get(i).get(j).color,i,j)));
             }
         }
     }
-    
-    
+
+    /**
+     * prints board to console
+     */
     public void showBoard()
     {
     	System.out.print("  ");
@@ -71,29 +105,41 @@ public class Board {
         System.out.println();
     }
 
+    /**
+     * Checks the integrity of the initial board variables provided (M,N,P,Q)
+     * @throws InvalidParameterError raises this exception if there is a problem with the provided variables
+     */
     public void checkInitialVariable() throws InvalidParameterError {
         // Recently changed: return false is changed to raising exceptions
         // Q > 0
-        if (row - 2 * k <= 0)
+        if (row - 2 * p <= 0)
         {
         	System.err.println("Q <= 0");
             throw new InvalidParameterError();
         }
         //M = 2P + Q
-        else if (row != 2 * k + (row - 2 * k))
+        else if (row != 2 * p + (row - 2 * p))
         {
         	System.err.println("M != 2P + Q");
             throw new InvalidParameterError();
         }
         // N*P is even
-        else if (col * k % 2 != 0)
+        else if (col * p % 2 != 0)
         {
         	System.err.println("N*P is odd");
             throw new InvalidParameterError();
         }
     }
 
+    /**
+     * this function tracks if any player has won
+     * @return the player who wins (-1 if tie, 0 if still going, 1 or 2 for Black and White)
+     */
     public int isWin() {
+        if (this.tieCount >= this.tieMax)
+        {
+            return -1;
+        }
         boolean W = true;
         boolean B = true;
         for (int i = 0;i< this.row;i++)
@@ -108,47 +154,68 @@ public class Board {
             }
 
         if (W)
-            return 1;
-        else if (B)
             return 2;
+        else if (B)
+            return 1;
         else
             return 0;
     }
-    
+
+    /**
+     * Intializes game. Adds the white checkers and black checkers to the board based on the board variables (M,N,P)
+     * when the game starts
+     * @throws InvalidParameterError raises this exception if there is a problem with the provided variables
+     */
     public void initializeGame() throws InvalidParameterError{
         this.checkInitialVariable();
-        for (int i = 0; i < this.k; ++i)
-            for (int j = 0; j < this.col; ++j)
+        for (int i = this.p; i >= 0; i--)
+        {
+            for (int j = (this.p - i - 1) % 2; j >= 0 && j < this.col; j += 2)
             {
-                if (i % 2 != 0)
-                {
-                    if (j%2 == 0)
+                // put white pieces
+                int i_white = this.row - this.p + i;
+                this.board.get(i_white).get(j).changeColor_helper("W");
+                // put black pieces
+                if ((this.row % 2 + this.p % 2) % 2 == 1)  // row,p = even,odd or odd,even
+                { 
+                    if (i % 2 == 1)  // even row, shift to the left and attach a piece to the end when needed
                     {
-                    	this.board.get(i).get(j).changeColor_helper("B");
-                        this.blackCount += 1;
-                    	this.board.get(this.row - this.k + i).get(j).changeColor_helper("W");
-                        this.whiteCount += 1;
+                        if (j - 1 >= 0)
+                            this.board.get(i).get(j-1).changeColor_helper("B");
+                        if ((j == this.col - 2) && (this.col % 2 == 0))
+                            this.board.get(i).get(this.col-1).changeColor_helper("B");
+                    } else {  // odd row, shift to the right and attach a piece to the beginning when needed
+                        if (j + 1 <= this.col - 1)
+                            this.board.get(i).get(j+1).changeColor_helper("B");
+                        if ((j == this.col - 1 || j == this.col - 2) && (this.p % 2 == 0))
+                            this.board.get(i).get(0).changeColor_helper("B");
                     }
+                } else {  // row,p = even,even
+                    this.board.get(i).get(j).changeColor_helper("B");
                 }
-                else if (i%2 == 0)
-                {
-
-                    if (j%2 !=0)
-                    {
-                    	this.board.get(i).get(j).changeColor_helper("B");
-                        this.blackCount += 1;
-                    	this.board.get(this.row - this.k + i).get(j).changeColor_helper("W");
-                        this.whiteCount += 1;
-                    }
-                }
+                this.whiteCount++;
+                this.blackCount++;
             }
+        }
     }
 
+    /**
+     * Checks if the coordinate provided is in board. Is an internal function
+     * @param pos_x x coordinte of the object to check for
+     * @param pos_y y coordinte of the object to check for
+     * @return a bool to describe if object is in the board or not
+     */
     public boolean isInBoard(int pos_x, int pos_y)
     {
         return (pos_x >= 0 && pos_x < this.row && pos_y >= 0 && pos_y < this.col);
     }
 
+    /**
+     * Makes Move on the board
+     * @param move Move object provided by the StudentAI, Uses this parameter to make the move on the board
+     * @param player this parameter tracks the current turn. either player 1 (white) or player 2(black)
+     * @throws InvalidMoveError raises this objection if the move provided isn't valid on the current board
+     */
     public void makeMove(Move move, int player) throws InvalidMoveError
     {
         //DO NOT TOUCH ANYTHING IN THIS FUNCTION
@@ -162,9 +229,9 @@ public class Board {
             turn = "W";
         else
             throw new InvalidMoveError();
-        Vector<Position> move_list = move.seq;
+        final Vector<Position> move_list = move.seq;
         Vector<Vector<Position>> move_to_check = new Vector<Vector<Position>> ();
-        Position ultimate_start = move_list.elementAt(0);
+        final Position ultimate_start = move_list.elementAt(0);
         Position ultimate_end = move_list.elementAt(move_list.size()-1);
         Vector<Position> past_positions = new Vector<Position> () {{
         	addElement(ultimate_start);
@@ -179,7 +246,7 @@ public class Board {
             }}
            );}
         boolean if_capture = false;
-
+        this.tieCount += 1;
         for (int t = 0; t<move_to_check.size();++t){
             Position start = move_to_check.get(t).get(0);
             Position target= move_to_check.get(t).get(1);
@@ -192,6 +259,7 @@ public class Board {
                 if (Math.abs(start.getX()-target.getX()) == 2)
                 {
                     if_capture = true;
+                    this.tieCount = 0;
                     Position capture_position = new Position((start.getX() + (int)(target.getX()-start.getX())/2), (start.getY() + (int)(target.getY()-start.getY())/2));
 
                     capture_positions.addElement(capture_position);
@@ -209,43 +277,56 @@ public class Board {
         }
     }
 
+    /**
+     * this function returns the all possible moves of the player whose turn it is
+     * @param color color of the player whose turn it is
+     * @return a list of Move objects which describe possible moves
+     */
     public Vector<Vector<Move>> getAllPossibleMoves(String color) {
         Vector<Vector<Move>> result = new Vector<Vector<Move>> ();
-
+        boolean captureMode = false;
         for (int i = 0; i < row; i++) {
             for (int j = 0; j < col; j++) {
                 Checker checker = board.get(i).get(j);
                 if (checker.color == color) {
                     Vector<Move> moves;
                     moves = checker.getPossibleMoves(this);
-                    if (!moves.isEmpty())
-                        result.addElement(moves);
+                    if (!moves.isEmpty()) {
+                        if (!captureMode && !moves.get(0).isCapture)
+                            result.addElement(moves);
+                        else if (!captureMode && moves.get(0).isCapture) {
+                            result.clear();
+                            captureMode = true;
+                            result.addElement(moves);
+                        }
+                        else if (captureMode && moves.get(0).isCapture) {
+                            result.addElement(moves);
+                        }
+                    }
                 }
-
             }
         }
         return result;
     }
 
+    /**
+     * this function returns the all possible moves of the player whose turn it is
+     * @param player number representing the player whose turn it is
+     * @return a list of Move objects which describe possible moves
+     */
     public Vector<Vector<Move>> getAllPossibleMoves(int player) {
-        Vector<Vector<Move>> result = new Vector<Vector<Move>> ();
-        String color = player == 1?"B" : "W";
-        for (int i = 0; i < row; i++) {
-            for (int j = 0; j < col; j++) {
-                Checker checker = board.get(i).get(j);
-                if (checker.color == color) {
-                    Vector<Move> moves;
-                    moves = checker.getPossibleMoves(this);
-                    if (!moves.isEmpty())
-                        result.addElement(moves);
-                }
-
-            }
-        }
-        return result;
+        return this.getAllPossibleMoves((player == 1) ? "B" : "W");
     }
 
-    
+    /**
+     * checks if a proposed move is valid or not.
+     * @param chess_row row of the object whose move we are checking
+     * @param chess_col col of the object whose move we are checking
+     * @param target_row row where the object would end up
+     * @param target_col col where the object would end up
+     * @param turn tracks turn player 1(white) or player 2(black)
+     * @return a bool which is True if valid, False otherwise
+     */
     public boolean isValidMove(int chess_row, int chess_col, int target_row, int target_col, String turn)
     {
         if (target_row < 0||target_row >= this.row||target_col < 0||target_col >= this.col)
