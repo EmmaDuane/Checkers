@@ -5,7 +5,7 @@
       <sourceFolder url="file://$MODULE_DIR$/src/checkers-python" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/checkers-python/AI_Extensions" isTestSource="false" />
     </content>
-    <orderEntry type="inheritedJdk" />
+    <orderEntry type="jdk" jdkName="Python 3.5 (Checkers_Student)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
   <component name="TestRunnerService">
