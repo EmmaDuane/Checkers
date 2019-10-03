@@ -4,6 +4,7 @@
 #include "Board.h"
 #pragma once
 
+
 class AI
 {
 protected:
