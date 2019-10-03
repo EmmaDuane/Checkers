@@ -43,7 +43,7 @@ vector<Move> Checker::getPossibleMoves(Board* board)
         return result;
     }
     vector<vector<Position>> multiple_jump;
-    Board new_board(*board);
+
     vector<Position> explore_direction = direction[color];
     if (isKing)
     {
@@ -55,38 +55,41 @@ vector<Move> Checker::getPossibleMoves(Board* board)
     for (auto i = explore_direction.begin(); i != explore_direction.end(); i++) {
         int pos_x = row+(*i)[0];
         int pos_y = col+(*i)[1];
-        if (new_board.isInBoard(pos_x,pos_y))
+        if (board->isInBoard(pos_x,pos_y))
         {
-            if (new_board.board[pos_x][pos_y].color == ".")
+            if (board->board[pos_x][pos_y].color == ".")
             {
                 result.emplace_back(Move(vector<Position>{Position(row,col),Position(pos_x,pos_y)}));
             }
         }
     }
     vector<Position> temp_v;
-    new_board.board[row][col].color = ".";
-    binary_tree_traversal(row,col,multiple_jump, new_board, explore_direction, temp_v);
+    string self_color =  board->board[row][col].color;
+    board->board[row][col].color = ".";
+    binary_tree_traversal(row,col,multiple_jump, *board, explore_direction, temp_v,self_color);
     if (!multiple_jump.empty())
     {
         result.clear();
     }
+
     for (auto jump = multiple_jump.begin(); jump != multiple_jump.end(); jump++) {
         (*jump).insert((*jump).begin(),Position(row,col));
         result.emplace_back(Move(*jump));
-
     }
+
+    board->board[row][col].color = self_color;
     return result;
 
 }
 
-void Checker::binary_tree_traversal(int pos_x,int pos_y,vector<vector<Position>> & multiple_jump,Board& board,vector<Position> direction,vector<Position>move) {
+void Checker::binary_tree_traversal(int pos_x,int pos_y,vector<vector<Position>> & multiple_jump,Board& board,vector<Position> direction,vector<Position>move, string self_color) {
     bool flag = true;
     for (auto i = direction.begin(); i != direction.end(); i++) {
         int temp_x = pos_x + (*i)[0];
         int temp_y = pos_y + (*i)[1];
         Position temp(temp_x, temp_y);
         if (board.isInBoard(temp_x, temp_y)
-        && board.board[temp_x][temp_y].color == opponent.at(this->color)
+        && board.board[temp_x][temp_y].color == opponent.at(self_color)
             && board.isInBoard(temp_x + (*i)[0], temp_y + (*i)[1])
             && board.board[temp_x + (*i)[0]][temp_y + (*i)[1]].color == ".")
         {
@@ -107,14 +110,14 @@ void Checker::binary_tree_traversal(int pos_x,int pos_y,vector<vector<Position>>
         int temp_x = pos_x + (*i)[0];
         int temp_y = pos_y + (*i)[1];
         Position temp(temp_x, temp_y);
-        if (board.isInBoard(temp_x, temp_y) && board.board[temp_x][temp_y].color == opponent.at(this->color)){
+        if (board.isInBoard(temp_x, temp_y) && board.board[temp_x][temp_y].color == opponent.at(self_color)){
             if (board.isInBoard(pos_x + (*i)[0] + (*i)[0], pos_y + (*i)[1] + (*i)[1]) &&
                 board.board[pos_x + (*i)[0] + (*i)[0]][pos_y + (*i)[1] + (*i)[1]].color == ".") {
                 Position temptemp{pos_x + (*i)[0] + (*i)[0], pos_y + (*i)[1] + (*i)[1]};
                 string backup = board.board[pos_x + (*i)[0]][pos_y + (*i)[1]].color;
                 board.board[pos_x + (*i)[0]][pos_y + (*i)[1]].color = ".";
                 move.push_back(temptemp);
-                this->binary_tree_traversal(temptemp[0], temptemp[1], multiple_jump, board, direction, move);
+                this->binary_tree_traversal(temptemp[0], temptemp[1], multiple_jump, board, direction, move,self_color);
                 move.pop_back();
                 board.board[pos_x + (*i)[0]][pos_y + (*i)[1]].color = backup;
             }

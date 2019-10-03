@@ -22,7 +22,7 @@ public:
 
 class Direction {
 public:
-    const std::map<std::string, const std::vector< Position>> list
+    const std::map<std::string, const std::vector< Position> > list
     {{"W",std::vector<Position>{Position(-1,-1),Position(-1,1)}},{"B",std::vector< Position>{Position(1,-1),Position(1,1)}} };
     std::vector<Position> operator[] (const std::string& index);
     Direction() = default;

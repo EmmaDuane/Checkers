@@ -12,14 +12,14 @@ int main(int argc, char *argv[])
 	//mode="m"->manual/"t"->tournament
 	int col = atoi(argv[1]);
 	int row = atoi(argv[2]);
-	int k = atoi(argv[3]);
+	int p = atoi(argv[3]);
 	string mode = argv[4];
 	int order = 0;
     if (mode == "m" or mode == "manual")
     {
         order = atoi(argv[5]);
     }
-	GameLogic main(col,row,k, mode, order);//col,row,k,g,mode,debug
+	GameLogic main(col,row,p, mode, order);//col,row,p,g,mode,debug
 	main.Run();
 
 	return 0;

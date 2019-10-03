@@ -18,6 +18,7 @@ public:
     Move(const string & input);
     vector<string> split(string input,string delimiter);
     string toString();
+    bool isCapture();
 };
 
 class MoveBuildError : public std::exception

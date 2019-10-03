@@ -1,7 +1,6 @@
 #include "Move.h"
 
 
-
 Move::Move()
 {
 }
@@ -69,4 +68,11 @@ string Move::toString()
         }
     }
     return result;
+}
+
+bool Move::isCapture()
+{
+    if (this->seq.size()>2)
+        return true;
+    return abs(seq[0][0]-seq[1][0]) > 1;
 }

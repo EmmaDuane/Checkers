@@ -1,29 +1,54 @@
-import java.util.ArrayList;
 import java.util.Scanner;
+import java.util.Vector;
 
+/*
+This module has the GameLogic Class which handles the different game modes (manual, tournament) and run it
+
+We are following the javadoc docstring format which is:
+@param tag describes the input parameters of the function
+@return tag describes what the function returns
+@throws tag describes the errors this function can raise
+ */
+
+/**
+ * This class describes Game Logic
+ */
 public class GameLogic {
-    private int col, row, k, order;
+    private int col, row, p, order;
     private String mode;
-    private ArrayList<AI> aiList;
+    private Vector<AI> aiList;
 
-    public GameLogic(int col, int row, int k, String mode, int order) {
+    /**
+     * Initialize a GameLogic object
+     * @param col number of columns in the board
+     * @param row number of rows in the board
+     * @param p number of rows to be filled with checker pieces at the start
+     * @param mode different modes that the game will be run on ("m": manual, "t": tournament)
+     * @param order determines which AI goes first in the game
+     */
+    public GameLogic(int col, int row, int p, String mode, int order) {
         this.col = col;
         this.row = row;
-        this.k = k;
+        this.p = p;
         this.mode = mode;
         this.order = order;
-        this.aiList = new ArrayList<AI>();
+        this.aiList = new Vector<AI>();
     }
 
-    public void Manual() {
+    /**
+     * Runs manual mode
+     * @throws InvalidParameterError raises this exception if there is a problem with the provided variables
+     */
+    private void Manual() throws InvalidParameterError {
         int player = 1, winPlayer = 0;
-        Move move = new Move(-1, -1);
-        Board board = new Board(col, row, k);
+        Move move = new Move(new Vector<Position>());
+        Board board = new Board(col, row, p);
         board.initializeGame();
+        board.showBoard();
         while (true) {
-            move = aiList.get(player - 1).getMove(move);
             try {
-                board = board.makeMove(move, player);
+                move = aiList.get(player - 1).GetMove(move);
+                board.makeMove(move, player);
             } catch (InvalidMoveError e) {
                 winPlayer = (player == 1) ? 2 : 1;
                 break;
@@ -37,26 +62,35 @@ public class GameLogic {
         System.out.println((winPlayer == -1) ? "Tie" : "Player " + winPlayer + " wins");
     }
 
-    public void TournamentInterface() {
+    /**
+     * Runs tournament mode
+     * @throws InvalidParameterError raises this exception if there is a problem with the provided variables
+     * @throws InvalidMoveError raises this objection if the move provided isn't valid on the current board
+     */
+    private void TournamentInterface() throws InvalidParameterError, InvalidMoveError {
         Scanner scanner = new Scanner(System.in);
-        StudentAI ai = new StudentAI(col, row, k);
+        StudentAI ai = new StudentAI(col, row, p);
         while (true) {
-            int col = scanner.nextInt(),
-                row = scanner.nextInt();
-            Move result = ai.getMove(new Move(col, row));
-            System.out.println(result.col + ' ' + result.row + ' ');
+            String input = scanner.nextLine();
+            Move result = ai.GetMove(new Move(input));
+            System.out.println(result.toString());
         }
     }
 
-    public void Run() {
+    /**
+     * Runs either manual mode or tournament mode depending on the configuration
+     * @throws InvalidParameterError raises this exception if there is a problem with the provided variables
+     * @throws InvalidMoveError raises this objection if the move provided isn't valid on the current board
+     */
+    public void Run() throws InvalidParameterError, InvalidMoveError {
         if ("m".equals(this.mode) || "manual".equals(this.mode)) {
             if (this.order == 1) {
-                aiList.add(new ManualAI(col, row, k));
-                aiList.add(new StudentAI(col, row, k));
+                aiList.addElement(new ManualAI(col, row, p));
+                aiList.addElement(new StudentAI(col, row, p));
             }
             else {
-                aiList.add(new StudentAI(col, row, k));
-                aiList.add(new ManualAI(col, row, k));
+                aiList.addElement(new StudentAI(col, row, p));
+                aiList.addElement(new ManualAI(col, row, p));
             }
 
             Manual();

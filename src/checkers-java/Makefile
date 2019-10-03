@@ -1,3 +1,5 @@
+#This makefile was originally Connect-K, but the commands are taken from Wumpus World makefile thanks to its simplicity
+
 JAR_PKG = Main.jar
 ENTRY_POINT = Main
 
@@ -7,14 +9,17 @@ SOURCE_FILE = \
 Main.java \
 GameLogic.java \
 Move.java \
+Direction.java \
+Position.java \
 Board.java \
 Checker.java\
 AI.java \
 StudentAI.java \
 ManualAI.java \
-InvalidMoveError.java
+InvalidMoveError.java \
+InvalidParameterError.java \
 
-TARGET = ./
+TARGET = .
 SOURCE = ../checker-java
 LIB = ../checker-java
 
@@ -30,29 +35,14 @@ vpath %.class $(TARGET)
 vpath %.java $(SOURCE)
 
 Default:
-	@echo "make new: build the target directory."
-	@echo "make build: compile the source file."
-	@echo "make clean: clear classes generated."
-	@echo "make rebuild: rebuild project."
-	@echo "make run: run your application at the entry point."
-	@echo "make jar: jar the classes."
-
-build: $(SOURCE_FILE:.java=.class)
-%.class: %.java
-	$(JAVAC) $(JFLAGS) $<
-
-rebuild: clean build
-
-.PHONY: new clean run jar
-
-new:
-	mkdir -pv $(TARGET)
-
-clean:
-	rm -frv $(TARGET)/*.class
-
-run:
-	java $(CLASSPATH) $(ENTRY_POINT)
-
-jar:
-	jar cvfe $(JAR_PKG) $(ENTRY_POINT) -C $(TARGET) .
+# Remove class files to create new ones
+	@rm -fr $(TARGET)/*.class
+# Compile and create class files
+	@$(JAVAC) $(JFLAGS) *.java
+# Remove jar file to create a new one
+	@rm -f $(TARGET)/Main.jar
+# Create a jar file
+	@jar -cfe $(JAR_PKG) $(ENTRY_POINT) -C $(TARGET) .
+# Finally, remove all the class files
+	@rm -f $(TARGET)/*.class
+	@echo Done.

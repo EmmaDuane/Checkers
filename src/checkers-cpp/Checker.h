@@ -25,7 +25,7 @@ public:
     void becomeKing();
     void becomeMan();
     vector<Move> getPossibleMoves(Board*board);
-    void binary_tree_traversal(int pos_x,int pos_y,vector<vector<Position>> & multiple_jump,Board& board,vector<Position> direction,vector<Position>move);
+    void binary_tree_traversal(int pos_x,int pos_y,vector<vector<Position> > & multiple_jump,Board& board,vector<Position> direction,vector<Position>move,string self_color);
     string toString();
 
 };

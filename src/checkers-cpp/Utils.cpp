@@ -30,7 +30,7 @@ bool Position::operator== (const Position& lp) const
     return lp.x == x && lp.y == y;
 }
 
-bool  Position::operator< (const Position& rp) const
+bool Position::operator< (const Position& rp) const
 {
     if (x < rp.x)
     {
