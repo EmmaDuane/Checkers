@@ -151,8 +151,7 @@ bool Board::isValidMove(int chess_row, int chess_col, int target_row, int target
 }
 
 vector<vector<Move> > Board::getAllPossibleMoves(string color) {
-    vector<vector<Move> > result;
-
+    vector<vector<Move> > temp;
     for (int i = 0; i < row; i++) {
         for (int j = 0; j < col; j++) {
             Checker checker = board[i][j];
@@ -160,10 +159,49 @@ vector<vector<Move> > Board::getAllPossibleMoves(string color) {
                 vector<Move> moves;
                 moves = checker.getPossibleMoves(this);
                 if (!moves.empty())
-                    result.push_back(moves);
+                    temp.push_back(moves);
             }
 
         }
+    }
+    bool hasCapture = false;
+    vector<vector<Move> > result;
+    int cursorToResult = 0;
+    for (int cursorToTemp = 0; cursorToTemp < temp.size(); ++cursorToTemp)
+    {
+        vector<Move> VectorI;
+        result.push_back(VectorI);
+        for (int j = 0; j < temp[cursorToTemp].size(); ++j)
+        {
+            if (! hasCapture)
+            {
+                if (temp[cursorToTemp][j].isCapture())
+                {
+                    hasCapture = true;
+                    result.clear();
+                    vector<Move> firstVector;
+                    firstVector.push_back(temp[cursorToTemp][j]);
+                    result.push_back(firstVector);
+                    cursorToResult = 0;
+                }
+                else{
+                    result[cursorToResult].push_back(temp[cursorToTemp][j]);
+                }
+            }
+            else{
+                if (temp[cursorToTemp][j].isCapture())
+                {
+                    result[cursorToResult].push_back(temp[cursorToTemp][j]);
+                }
+            }
+
+        }
+        if (result[cursorToResult].size() == 0 )
+        {
+            result.erase(result.begin() + cursorToResult);
+            --cursorToResult;
+        }
+        ++cursorToResult;
     }
     return result;
 }
@@ -242,7 +280,6 @@ void Board::makeMove(const Move& move, int player)
     else if (player == 2)
         turn = "W";
     else {
-        cout << "throwing valid move error!!!!!!!!!" << endl;
         throw InvalidMoveError();
     }
     vector<Position> move_list = move.seq;

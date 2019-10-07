@@ -29,7 +29,7 @@ void GameLogic::Manual()
 		}
 		catch (InvalidMoveError)
 		{
-			cout << "Invalid Move!" << endl;
+			cerr << "Invalid Move!" << endl;
 			winPlayer = player == 1 ? 2 : 1;
 			break;
 		}
