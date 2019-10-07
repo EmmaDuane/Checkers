@@ -7,10 +7,13 @@ We are following the javadoc docstring format which is:
 @raise tag describes the errors this function can raise
 """
 
-from GameLogic import GameLogic
 import sys
+sys.path.append("../src/checkers-python")
+sys.path.append("../src/checkers-python/AI_Extensions")
 
+from GameLogic import GameLogic
 from socket import *
+
 def network_init():
     """
     This function sets up a network connection to the ICS servers incase you want to play against another AI connected to the network.

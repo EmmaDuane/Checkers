@@ -135,6 +135,7 @@ public class Board {
      * this function tracks if any player has won
      * @return the player who wins (-1 if tie, 0 if still going, 1 or 2 for Black and White)
      */
+
     public int isWin() {
         if (this.tieCount >= this.tieMax)
         {
@@ -142,17 +143,23 @@ public class Board {
         }
         boolean W = true;
         boolean B = true;
-        for (int i = 0;i< this.row;i++)
-            for (int j = 0;j< this.col;j++)
-            {
-                if (this.board.get(i).get(j).color == "W")
-                    W = false;
-                else if (this.board.get(i).get(j).color == "B")
-                    B = false;
-                if (! W && ! B)
-                    return 0;
+        if (this.getAllPossibleMoves(1).size() == 0) {
+            B = false;
+        } else if (this.getAllPossibleMoves(2).size() == 0) {
+            W = false;
+        } else {
+            for (int row = 0; row < this.row; row++) {
+                for (int col = 0; col < this.col; col++) {
+                    Checker checker = this.board.get(row).get(col);
+                    if (checker.color == "W")
+                        W = false;
+                    else if (checker.color == "B")
+                        B = false;
+                    if (!W && !B)
+                        return 0;
+                }
             }
-
+        }
         if (W)
             return 2;
         else if (B)

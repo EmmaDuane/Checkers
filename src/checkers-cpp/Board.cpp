@@ -331,17 +331,23 @@ int Board::isWin() {
     }
     bool W = true;
     bool B = true;
-    for (int i = 0;i< this->row;i++)
-        for (int j = 0;j< this->col;j++)
-        {
-            if (board[i][j].color == "W")
-                W = false;
-            else if (board[i][j].color == "B")
-                B = false;
-            if (! W && ! B)
-                return 0;
+    if (getAllPossibleMoves(1).size() == 0) {
+        B = false;
+    } else if (getAllPossibleMoves(2).size() == 0) {
+        W = false;
+    } else {
+        for (int row = 0; row < this->row; row++) {
+            for (int col = 0; col < this->col; col++) {
+                Checker checker = this->board[row][col];
+                if (checker.color == "W")
+                    W = false;
+                else if (checker.color == "B")
+                    B = false;
+                if (!W && !B)
+                    return 0;
+            }
         }
-
+    }
     if (W)
         return 2;
     else if (B)
