@@ -8,20 +8,21 @@ def valid_name(name):
             return False
     return True
 
-path = ""
+
+path = os.path.abspath(os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), "src"))
 print("Make sure you do not change the file structure.")
 lang = input("Please enter which language you use {cpp/java/py}:")
 if lang not in ["cpp","java","py","python"]:
     raise Exception("Unsupport language.")
 
 if lang == "cpp":
-    path = "../src/checkers-cpp"
+    path = os.path.join(path, "checkers-cpp")
 elif lang == "java":
-    path = "../src/checkers-java"
+    path = os.path.join(path, "checkers-java")
 else:
     if lang == 'python':
         lang = "py"
-    path = "../src/checkers-python"
+    path = os.path.join(path, "checkers-python")
 
 if not os.path.exists(path):
     raise IOError("Src folder does not exist. Make sure you do not change the file structure.")
@@ -29,7 +30,7 @@ if not os.path.exists(path):
 
 name = input("please input your team name: ")
 if not valid_name(name):
-    raise  Exception("Your team name can only contain alphanumeric characters")
+    raise Exception("Your team name can only contain alphanumeric characters")
 
 os.system("zip -r "+name+"_"+lang+".zip"+" "+path)
 
