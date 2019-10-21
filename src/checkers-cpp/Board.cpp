@@ -360,3 +360,37 @@ int Board::isWin() {
         return 0;
 }
 
+void Board:: Undo(){
+    if(!saved_move_list.empty()){
+        Saved_Move temp_saved_move = saved_move_list.back();
+        Position original_point = temp_saved_move.maked_move.seq[0];
+        Position target_point = temp_saved_move.maked_move.seq[-1];
+
+        this->board[original_point[0]][original_point[1]].color = this->board[target_point[0]][target_point[1]].color;
+        if(temp_saved_move.become_king){
+            this->board[original_point[0]][original_point[1]].isKing = false;
+        }
+        else{
+            this->board[original_point[0]][original_point[1]].isKing = this->board[target_point[0]][target_point[1]].isKing;
+        }
+
+        if(!(target_point == original_point)){
+            this->board[target_point[0]][target_point[1]].color = ".";
+            this->board[target_point[0]][target_point[1]].isKing = false;
+        }
+        for(int i = 0; i < temp_saved_move.saved_enemy_list.size(); i++){
+            int x = temp_saved_move.saved_enemy_list[i][0];
+            int y = temp_saved_move.saved_enemy_list[i][1];
+            int c = temp_saved_move.saved_enemy_list[i][2];
+            int k = temp_saved_move.saved_enemy_list[i][3];
+
+            this->board[x][y].color = (c==1?"B":"W");
+            this->board[x][y].isKing = (k==0?false:true);
+
+        }
+        saved_move_list.pop_back();
+
+
+    }
+}
+

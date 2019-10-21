@@ -370,5 +370,42 @@ public class Board {
 	    return false;
     }
 
+    void Undo(){
+        if (!saved_move_list.isEmpty())
+        {
+            Saved_Move temp_saved_move = saved_move_list.lastElement();
+            Position original_position = temp_saved_move.made_move.seq.firstElement();
+            Position target_position = temp_saved_move.made_move.seq.lastElement();
+
+            this.board.get(original_position.getX()).get(original_position.getY()).color =
+                        this.board.get(target_position.getX()).get(target_position.getY()).color;
+
+            if (temp_saved_move.become_king)
+                this.board.get(original_position.getX()).get(original_position.getY()).isKing = false;
+            else
+                this.board.get(original_position.getX()).get(original_position.getY()).isKing =
+                        this.board.get(target_position.getX()).get(target_position.getY()).isKing;
+
+            if (!(target_position == original_position))
+            {
+                this.board.get(target_position.getX()).get(target_position.getY()).color = ".";
+                this.board.get(target_position.getX()).get(target_position.getY()).isKing = false;
+            }
+            for (int i = 0; i < temp_saved_move.enemy_list.size(); i++)
+            {
+                int x = temp_saved_move.enemy_list.elementAt(i).get(0);
+                int y = temp_saved_move.enemy_list.elementAt(i).get(1);
+                int c = temp_saved_move.enemy_list.elementAt(i).get(2);
+                int k = temp_saved_move.enemy_list.elementAt(i).get(3);
+
+                this.board.get(x).get(y).color = (c == 1? "B" : "W");
+                this.board.get(x).get(y).isKing = (k == 0? false : true);
+            }
+
+            saved_move_list.remove(saved_move_list.size()-1);
+        }
+
+    }
+
 
 }
