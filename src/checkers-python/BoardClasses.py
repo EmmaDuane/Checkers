@@ -283,24 +283,32 @@ class Board:
             turn =  1
         if self.tie_counter >= self.tie_max:
             return -1
-        W = True
-        B = True
+        W_has_move = True
+        B_has_move = True
         if len(self.get_all_possible_moves(1)) == 0:
             if turn != 1:
-                B = False
+                B_has_move = False
         elif len(self.get_all_possible_moves(2)) == 0:
             if turn != 2:
-                W = False
-        else:
-            for row in range(self.row):
-                for col in range(self.col):
-                    checker = self.board[row][col]
-                    if checker.color == 'W':
-                        W = False
-                    elif checker.color == 'B':
-                        B = False
-                    if not W and not B:
-                        return 0
+                W_has_move = False
+
+        if W_has_move and not B_has_move:
+            return 2
+        elif not W_has_move and B_has_move:
+            return 1
+
+        W = True
+        B = True
+
+        for row in range(self.row):
+            for col in range(self.col):
+                checker = self.board[row][col]
+                if checker.color == 'W':
+                    W = False
+                elif checker.color == 'B':
+                    B = False
+                if not W and not B:
+                    return 0
         if W:
             return 2
         elif B:
@@ -385,18 +393,10 @@ if __name__ == "__main__":
 
 
     b=Board(10,10,2)
-    b.board[4][3] = Checker.Checker("W", [4, 3])
-    b.board[4][5] = Checker.Checker("W", [4, 5])
-    b.board[6][5] = Checker.Checker("W", [6, 5])
-    b.board[8][1] = Checker.Checker("B", [8, 1])
-    b.board[2][7] = Checker.Checker("W", [2, 7])
-    b.board[2][5] = Checker.Checker("W", [2, 5])
-    b.board[2][3] = Checker.Checker("W", [2, 3])
+    b.board[0][3] = Checker.Checker("B", [0, 3])
+    b.board[0][5] = Checker.Checker("B", [0, 5])
 
-    b.board[8][1].become_king()
+    b.board[1][4] = Checker.Checker("W", [1, 4])
+
     b.show_board()
-    m = b.get_all_possible_moves("B")[0][0]
-    b.make_move(m,"B")
-    b.show_board()
-    b.undo()
-    b.show_board()
+    print(b.is_win(1))

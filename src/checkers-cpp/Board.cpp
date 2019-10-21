@@ -368,6 +368,8 @@ int Board::isWin(string turn_s) {
     }
     bool W = true;
     bool B = true;
+    bool WHasMove = true;
+    bool BHasMove = true;
     int turn = 0;
     if (turn_s == "W")
         turn = 2;
@@ -375,23 +377,31 @@ int Board::isWin(string turn_s) {
         turn = 1;
     if (getAllPossibleMoves(1).size() == 0) {
         if (turn != 1)
-            B = false;
+            BHasMove = false;
     } else if (getAllPossibleMoves(2).size() == 0) {
         if (turn != 2)
-            W = false;
-    } else {
-        for (int row = 0; row < this->row; row++) {
-            for (int col = 0; col < this->col; col++) {
-                Checker checker = this->board[row][col];
-                if (checker.color == "W")
-                    W = false;
-                else if (checker.color == "B")
-                    B = false;
-                if (!W && !B)
-                    return 0;
-            }
+            WHasMove = false;
+    }
+    if (WHasMove && !BHasMove)
+    {
+        return 2;
+    }
+    else if  (!WHasMove && BHasMove)
+    {
+        return 1;
+    }
+    for (int row = 0; row < this->row; row++) {
+        for (int col = 0; col < this->col; col++) {
+            Checker checker = this->board[row][col];
+            if (checker.color == "W")
+                W = false;
+            else if (checker.color == "B")
+                B = false;
+            if (!W && !B)
+                return 0;
         }
     }
+
     if (W)
         return 2;
     else if (B)

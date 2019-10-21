@@ -153,26 +153,36 @@ public class Board {
         }
         boolean W = true;
         boolean B = true;
+        boolean WHasMove = true;
+        boolean BHasMove = true;
         if (this.getAllPossibleMoves(1).size() == 0) {
 
             if (turn != 1)
-                B = false;
+                BHasMove = false;
         } else if (this.getAllPossibleMoves(2).size() == 0) {
             if (turn != 2)
-                W = false;
-        } else {
-            for (int row = 0; row < this.row; row++) {
-                for (int col = 0; col < this.col; col++) {
-                    Checker checker = this.board.get(row).get(col);
-                    if (checker.color == "W")
-                        W = false;
-                    else if (checker.color == "B")
-                        B = false;
-                    if (!W && !B)
-                        return 0;
-                }
+                WHasMove = false;
+        }
+        if (WHasMove && !BHasMove)
+        {
+            return 2;
+        }
+        else if  (!WHasMove && BHasMove)
+        {
+            return 1;
+        }
+        for (int row = 0; row < this.row; row++) {
+            for (int col = 0; col < this.col; col++) {
+                Checker checker = this.board.get(row).get(col);
+                if (checker.color == "W")
+                    W = false;
+                else if (checker.color == "B")
+                    B = false;
+                if (!W && !B)
+                    return 0;
             }
         }
+
         if (W)
             return 2;
         else if (B)
