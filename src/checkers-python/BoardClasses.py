@@ -141,7 +141,10 @@ class Board:
                     saved_enemy_position.append((capture_position[0],capture_position[1],self.board[capture_position[0]][capture_position[1]].color,self.board[capture_position[0]][capture_position[1]].is_king))
                     self.board[capture_position[0]][capture_position[1]] = Checker.Checker(".", [capture_position[0], capture_position[1]])
                     # capture
-
+                    if turn == "B":
+                        self.white_count -= 1
+                    else:
+                        self.black_count -= 1
                 if (turn == 'B' and target[0] == self.row - 1):
                     if not is_start_checker_king:
                         temp_saved_move[2] = True

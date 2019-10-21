@@ -311,6 +311,10 @@ void Board::makeMove(const Move& move, int player)
                 capture_positions.push_back(capture_position);
 
                 this->board[capture_position[0]][capture_position[1]] = Checker(".", capture_position[0], capture_position[1]);
+                if(turn == "B")
+                    this->whiteCount--;
+                else
+                    this->blackCount--;
             }
             if (turn == "B"  && target[0] == this->row - 1)
                 this->board[target[0]][target[1]].becomeKing();

@@ -272,6 +272,10 @@ public class Board {
                     capture_positions.addElement(capture_position);
 
                     this.board.get(capture_position.getX()).get(capture_position.getY()).changeColor_helper(".");
+                    if(turn.equals("B"))
+                        this.whiteCount --;
+                    else
+                        this.blackCount --;
                 }
                 if (turn == "B"  && target.getX() == this.row - 1)
                     this.board.get(target.getX()).get(target.getY()).becomeKing();
