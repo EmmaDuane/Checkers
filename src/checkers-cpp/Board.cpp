@@ -329,16 +329,56 @@ void Board::makeMove(const Move& move, int player)
 
 }
 
-int Board::isWin() {
+int Board::isWin(int turn) {
     if (this->tieCount >= this->tieMax){
         return -1;
     }
     bool W = true;
     bool B = true;
     if (getAllPossibleMoves(1).size() == 0) {
-        B = false;
+        if (turn != 1)
+            B = false;
     } else if (getAllPossibleMoves(2).size() == 0) {
-        W = false;
+        if (turn != 2)
+            W = false;
+    } else {
+        for (int row = 0; row < this->row; row++) {
+            for (int col = 0; col < this->col; col++) {
+                Checker checker = this->board[row][col];
+                if (checker.color == "W")
+                    W = false;
+                else if (checker.color == "B")
+                    B = false;
+                if (!W && !B)
+                    return 0;
+            }
+        }
+    }
+    if (W)
+        return 2;
+    else if (B)
+        return 1;
+    else
+        return 0;
+}
+
+int Board::isWin(string turn_s) {
+    if (this->tieCount >= this->tieMax){
+        return -1;
+    }
+    bool W = true;
+    bool B = true;
+    int turn = 0;
+    if (turn_s == "W")
+        turn = 2;
+    else if (turn_s == "B")
+        turn = 1;
+    if (getAllPossibleMoves(1).size() == 0) {
+        if (turn != 1)
+            B = false;
+    } else if (getAllPossibleMoves(2).size() == 0) {
+        if (turn != 2)
+            W = false;
     } else {
         for (int row = 0; row < this->row; row++) {
             for (int col = 0; col < this->col; col++) {
