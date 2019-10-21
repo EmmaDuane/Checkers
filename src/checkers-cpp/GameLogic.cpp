@@ -33,7 +33,7 @@ void GameLogic::Manual()
 			winPlayer = player == 1 ? 2 : 1;
 			break;
 		}
-		winPlayer = board.isWin();
+		winPlayer = board.isWin(player);
 		board.showBoard();
 		if (winPlayer != 0)
 		{

@@ -14,7 +14,17 @@ We are following the javadoc docstring format which is:
 /**
  * This class describes Board
  */
+
+
+
 public class Board {
+
+    class Saved_Move{
+        Move made_move;
+        Vector<Vector<Integer>> enemy_list; //<row, col, color(1/2 indicate "B"/"W", is_king>
+        boolean become_king;
+    }
+    Vector<Saved_Move> saved_move_list;
 	static final HashMap<String, String> opponent = new HashMap<String,String> () {{
     	put("W","B");
     	put("B","W");
@@ -136,7 +146,7 @@ public class Board {
      * @return the player who wins (-1 if tie, 0 if still going, 1 or 2 for Black and White)
      */
 
-    public int isWin() {
+    public int isWin(int turn) {
         if (this.tieCount >= this.tieMax)
         {
             return -1;
@@ -144,9 +154,12 @@ public class Board {
         boolean W = true;
         boolean B = true;
         if (this.getAllPossibleMoves(1).size() == 0) {
-            B = false;
+
+            if (turn != 1)
+                B = false;
         } else if (this.getAllPossibleMoves(2).size() == 0) {
-            W = false;
+            if (turn != 2)
+                W = false;
         } else {
             for (int row = 0; row < this.row; row++) {
                 for (int col = 0; col < this.col; col++) {

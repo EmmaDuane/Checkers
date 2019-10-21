@@ -269,7 +269,7 @@ class Board:
 
         return result
 
-    def is_win(self):
+    def is_win(self,turn):
         """
         this function tracks if any player has won
         @param :
@@ -277,14 +277,20 @@ class Board:
         @return :
         @raise :
         """
+        if turn == "W":
+            turn = 2
+        elif turn == "B":
+            turn =  1
         if self.tie_counter >= self.tie_max:
             return -1
         W = True
         B = True
         if len(self.get_all_possible_moves(1)) == 0:
-            B = False
+            if turn != 1:
+                B = False
         elif len(self.get_all_possible_moves(2)) == 0:
-            W = False
+            if turn != 2:
+                W = False
         else:
             for row in range(self.row):
                 for col in range(self.col):
