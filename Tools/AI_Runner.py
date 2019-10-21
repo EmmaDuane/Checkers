@@ -6,10 +6,11 @@ We are following the javadoc docstring format which is:
 @return tag describes what the function returns
 @raise tag describes the errors this function can raise
 """
-
+import os
 import sys
-sys.path.append("../src/checkers-python")
-sys.path.append("../src/checkers-python/AI_Extensions")
+
+sys.path.append(os.path.join(os.path.abspath(os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), "src")), "checkers-python"))
+sys.path.append(os.path.join(os.path.join(os.path.abspath(os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), "src")), "checkers-python"),"AI_Extensions"))
 
 from GameLogic import GameLogic
 from socket import *
