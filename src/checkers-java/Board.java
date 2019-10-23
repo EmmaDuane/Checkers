@@ -423,6 +423,12 @@ public class Board {
 
                 this.board.get(x).get(y).color = (c == 1? "B" : "W");
                 this.board.get(x).get(y).isKing = (k == 0? false : true);
+                if (c==1){
+                    this.blackCount += 1;
+                }
+                else{
+                    this.whiteCount += 1;
+                }
             }
 
             saved_move_list.remove(saved_move_list.size()-1);

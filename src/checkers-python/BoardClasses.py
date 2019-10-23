@@ -378,6 +378,10 @@ class Board:
                 x,y,c,k = saved_enemy
                 self.board[x][y].color = c
                 self.board[x][y].is_king = k
+                if c == "W":
+                    self.white_count += 1
+                if c == "B":
+                    self.black_count += 1
 
             self.saved_move.pop(-1)
         else:
@@ -392,11 +396,16 @@ class Board:
 if __name__ == "__main__":
 
 
-    b=Board(10,10,2)
-    b.board[0][3] = Checker.Checker("B", [0, 3])
-    b.board[0][5] = Checker.Checker("B", [0, 5])
-
-    b.board[1][4] = Checker.Checker("W", [1, 4])
-
+    b=Board(4,4,1)
+    b.initialize_game()
     b.show_board()
-    print(b.is_win(1))
+
+    b.make_move(b.get_all_possible_moves(1)[1][0],1)
+    b.make_move(b.get_all_possible_moves(1)[1][0], 1)
+    b.make_move(b.get_all_possible_moves(2)[1][0], 2)
+    b.show_board()
+
+    print(b.black_count)
+    b.undo()
+    b.show_board()
+    print(b.black_count)

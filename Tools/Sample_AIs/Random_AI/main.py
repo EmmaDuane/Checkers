@@ -9,7 +9,7 @@ We are following the javadoc docstring format which is:
 
 from GameLogic import GameLogic
 import sys
-
+sys.path.append("./")
 from socket import *
 def network_init():
     """
