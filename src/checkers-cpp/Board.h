@@ -17,7 +17,6 @@ struct Saved_Move{
     bool become_king;
 };
 
-
 class Board {
 public:
 	vector<vector<Checker> > board;

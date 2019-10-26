@@ -272,7 +272,10 @@ void Board::makeMove(const Move& move, int player)
 {
     //DO NOT TOUCH ANYTHING IN THIS FUNCTION
     //THE CODE LOGIC IS FROM PYTHON VERSION
-
+    Saved_Move temp_saved_move;
+    temp_saved_move.maked_move = move;
+    
+    vector<vector<int>> saved_enemy_position;
     string turn = "";
 
     if (player == 1)
@@ -285,6 +288,7 @@ void Board::makeMove(const Move& move, int player)
     vector<Position> move_list = move.seq;
     vector<vector<Position> > move_to_check;
     Position ultimate_start = move_list[0];
+    bool is_start_checker_king = this->board[ultimate_start[0]][ultimate_start[1]].isKing;
     Position ultimate_end = move_list[move_list.size()-1];
     vector<Position> past_positions{ultimate_start};
     vector<Position> capture_positions;
@@ -304,30 +308,61 @@ void Board::makeMove(const Move& move, int player)
             past_positions.push_back(target);
             if (abs(start[0]-target[0]) == 2)
             {
+                vector<int> temp_enemy_position;
                 if_capture = true;
                 this->tieCount = 0;
                 Position capture_position {(start[0] + (int)(target[0]-start[0])/2), (start[1] + (int)(target[1]-start[1])/2)};
 
                 capture_positions.push_back(capture_position);
-
+                //record capture position
+                temp_enemy_position.push_back(capture_position[0]); // row
+                temp_enemy_position.push_back(capture_position[1]); // col
+                // push back color 1 = "B" 2 = "W"
+                if(this->board[capture_position[0]][capture_position[1]].color == "B"){
+                    temp_enemy_position.push_back(1);
+                }
+                else{
+                    temp_enemy_position.push_back(2);
+                }
+                // the checker is regular or king, 0 = regular, 1 = king
+                if(this->board[capture_position[0]][capture_position[1]].isKing){
+                    temp_enemy_position.push_back(1);
+                }
+                else{temp_enemy_position.push_back(0);}
+                
+                saved_enemy_position.push_back(temp_enemy_position);
+                
                 this->board[capture_position[0]][capture_position[1]] = Checker(".", capture_position[0], capture_position[1]);
-                if(turn == "B")
-                    this->whiteCount--;
-                else
-                    this->blackCount--;
+                
+                
             }
-            if (turn == "B"  && target[0] == this->row - 1)
+            if (turn == "B"  && target[0] == this->row - 1){
+                if(!is_start_checker_king){
+                    temp_saved_move.become_king = true;
+                }
                 this->board[target[0]][target[1]].becomeKing();
-            else if (turn == "W"  && target[0] == 0)
+            }
+            
+            else if (turn == "W"  && target[0] == 0){
+                if(!is_start_checker_king){
+                    temp_saved_move.become_king = true;
+                }
                 this->board[target[0]][target[1]].becomeKing();
+            }
+            else{
+                temp_saved_move.become_king = false;
+            }
         }
         else {
             throw InvalidMoveError();
         }
 
     }
+    temp_saved_move.saved_enemy_list = saved_enemy_position;
+    saved_move_list.push_back(temp_saved_move);
 
 }
+
 
 int Board::isWin(int turn) {
     if (this->tieCount >= this->tieMax){

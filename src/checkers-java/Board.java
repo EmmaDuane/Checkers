@@ -251,6 +251,12 @@ public class Board {
         //DO NOT TOUCH ANYTHING IN THIS FUNCTION
         //THE CODE LOGIC IS FROM PYTHON VERSION
 
+        // create a new saved_move object
+        Saved_Move temp_saved_move  = new Saved_Move();
+        temp_saved_move.made_move = move;
+        Vector<Vector<Integer>> saved_enemy_position = new Vector<Vector<Integer>>();
+        // end
+
         String turn = "";
 
         if (player == 1)
@@ -262,6 +268,9 @@ public class Board {
         final Vector<Position> move_list = move.seq;
         Vector<Vector<Position>> move_to_check = new Vector<Vector<Position>> ();
         final Position ultimate_start = move_list.elementAt(0);
+        // new
+        boolean is_start_check_king = this.board.get(ultimate_start.getX()).get(ultimate_start.getY()).isKing;
+        // end
         Position ultimate_end = move_list.elementAt(move_list.size()-1);
         Vector<Position> past_positions = new Vector<Position> () {{
         	addElement(ultimate_start);
@@ -277,10 +286,13 @@ public class Board {
            );}
         boolean if_capture = false;
         this.tieCount += 1;
-        for (int t = 0; t<move_to_check.size();++t){
+        for (int t = 0; t<move_to_check.size();++t)
+        {
             Position start = move_to_check.get(t).get(0);
             Position target= move_to_check.get(t).get(1);
-            if (this.isValidMove(start.getX(),start.getY(),target.getX(),target.getY(),turn) || (if_capture  && Math.abs(start.getX()-target.getX()) == 1)){
+            if (this.isValidMove(start.getX(),start.getY(),target.getX(),target.getY(),turn) ||
+                    (if_capture  && Math.abs(start.getX()-target.getX()) == 1))
+            {
                 this.board.get(start.getX()).get(start.getY()).color = ".";
                 this.board.get(target.getX()).get(target.getY()).color = turn;
                 this.board.get(target.getX()).get(target.getY()).isKing = this.board.get(start.getX()).get(start.getY()).isKing;
@@ -288,28 +300,55 @@ public class Board {
                 past_positions.addElement(target);
                 if (Math.abs(start.getX()-target.getX()) == 2)
                 {
+                    // new
+                    Vector<Integer> temp_enemy_position = null;
+                    //end
+
                     if_capture = true;
                     this.tieCount = 0;
                     Position capture_position = new Position((start.getX() + (int)(target.getX()-start.getX())/2), (start.getY() + (int)(target.getY()-start.getY())/2));
 
                     capture_positions.addElement(capture_position);
-
+                    // new record capture position
+                    temp_enemy_position.addElement(capture_position.x); //row
+                    temp_enemy_position.addElement(capture_position.y); //col
+                    temp_enemy_position.addElement(this.board.get(capture_position.getX()).get(capture_position.getY()).color == "B" ? 1 : 2);
+                    temp_enemy_position.addElement(this.board.get(capture_position.getX()).get(capture_position.getY()).isKing ? 1 : 0);
+                    saved_enemy_position.addElement(temp_enemy_position);
+                    // end
                     this.board.get(capture_position.getX()).get(capture_position.getY()).changeColor_helper(".");
-                    if(turn.equals("B"))
-                        this.whiteCount --;
-                    else
-                        this.blackCount --;
                 }
-                if (turn == "B"  && target.getX() == this.row - 1)
+                if (turn == "B"  && target.getX() == this.row - 1) {
+                    // new
+                    if (!is_start_check_king)
+                        temp_saved_move.become_king = true;
+                    // end
                     this.board.get(target.getX()).get(target.getY()).becomeKing();
-                else if (turn == "W"  && target.getX() == 0)
+                }
+                else if (turn == "W"  && target.getX() == 0) {
+                    // end
+                    if (!is_start_check_king)
+                        temp_saved_move.become_king = true;
+                    // end
                     this.board.get(target.getX()).get(target.getY()).becomeKing();
+                }
+                // new
+                else
+                    temp_saved_move.become_king = false;
+                // end
+
             }
-            else {
+            else
                 throw new InvalidMoveError();
-            }
+
         }
+        // new
+        temp_saved_move.enemy_list = saved_enemy_position;
+        saved_move_list.addElement(temp_saved_move);
+        // end
     }
+
+
 
     /**
      * this function returns the all possible moves of the player whose turn it is
