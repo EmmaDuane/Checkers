@@ -14,17 +14,7 @@ We are following the javadoc docstring format which is:
 /**
  * This class describes Board
  */
-
-
-
 public class Board {
-
-    class Saved_Move{
-        Move made_move;
-        Vector<Vector<Integer>> enemy_list; //<row, col, color(1/2 indicate "B"/"W", is_king>
-        boolean become_king;
-    }
-    Vector<Saved_Move> saved_move_list;
 	static final HashMap<String, String> opponent = new HashMap<String,String> () {{
     	put("W","B");
     	put("B","W");
@@ -38,8 +28,18 @@ public class Board {
     int blackCount = 0;
     int whiteCount = 0;
 
-    /**
-     * Intializes board:
+    // new
+    class Saved_Move {
+        Move made_move;
+        Vector<Vector<Integer>> enemy_list;
+        boolean become_king;
+     }
+
+     Vector<Saved_Move> saved_move_list = new Vector<Saved_Move>();
+     // end
+
+     /**
+     * Initializes board:
      *      M = number of rows
      *      N = number of columns
      *      P = number of rows containing initial checker pieces
@@ -145,7 +145,6 @@ public class Board {
      * this function tracks if any player has won
      * @return the player who wins (-1 if tie, 0 if still going, 1 or 2 for Black and White)
      */
-
     public int isWin(int turn) {
         if (this.tieCount >= this.tieMax)
         {
@@ -191,8 +190,9 @@ public class Board {
             return 0;
     }
 
+
     /**
-     * Intializes game. Adds the white checkers and black checkers to the board based on the board variables (M,N,P)
+     * Initializes game. Adds the white checkers and black checkers to the board based on the board variables (M,N,P)
      * when the game starts
      * @throws InvalidParameterError raises this exception if there is a problem with the provided variables
      */
@@ -348,8 +348,6 @@ public class Board {
         // end
     }
 
-
-
     /**
      * this function returns the all possible moves of the player whose turn it is
      * @param color color of the player whose turn it is
@@ -431,6 +429,7 @@ public class Board {
 	        return (chess_being_moved.isKing||chess_being_moved.color == "W") && this.board.get(chess_row - 1).get(chess_col - 1).color != turn && this.board.get(chess_row - 1).get(chess_col - 1).color != ".";
 	    return false;
     }
+
 
     void Undo(){
         if (!saved_move_list.isEmpty())
