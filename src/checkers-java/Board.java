@@ -429,9 +429,9 @@ public class Board {
                 else{
                     this.whiteCount += 1;
                 }
-                this.tieCount -= 1;
+                
             }
-
+            this.tieCount -= 1;
             saved_move_list.remove(saved_move_list.size()-1);
         }
 
