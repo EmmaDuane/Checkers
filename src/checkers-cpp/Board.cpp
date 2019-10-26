@@ -410,12 +410,13 @@ int Board::isWin(string turn_s) {
         return 0;
 }
 
+
 void Board:: Undo(){
     if(!saved_move_list.empty()){
         Saved_Move temp_saved_move = saved_move_list.back();
         Position original_point = temp_saved_move.maked_move.seq[0];
-        Position target_point = temp_saved_move.maked_move.seq[-1];
-
+        Position target_point = temp_saved_move.maked_move.seq[temp_saved_move.maked_move.seq.size()-1];
+        
         this->board[original_point[0]][original_point[1]].color = this->board[target_point[0]][target_point[1]].color;
         if(temp_saved_move.become_king){
             this->board[original_point[0]][original_point[1]].isKing = false;
@@ -423,7 +424,7 @@ void Board:: Undo(){
         else{
             this->board[original_point[0]][original_point[1]].isKing = this->board[target_point[0]][target_point[1]].isKing;
         }
-
+        
         if(!(target_point == original_point)){
             this->board[target_point[0]][target_point[1]].color = ".";
             this->board[target_point[0]][target_point[1]].isKing = false;
@@ -433,20 +434,15 @@ void Board:: Undo(){
             int y = temp_saved_move.saved_enemy_list[i][1];
             int c = temp_saved_move.saved_enemy_list[i][2];
             int k = temp_saved_move.saved_enemy_list[i][3];
-
+            
             this->board[x][y].color = (c==1?"B":"W");
             this->board[x][y].isKing = (k==0?false:true);
-            if (c==1){
-                this->blackCount += 1;
-            }
-            else{
-                this->whiteCount += 1;
-            }
-
+            
         }
         saved_move_list.pop_back();
-
-
+        
+        
     }
 }
+
 
