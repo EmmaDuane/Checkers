@@ -382,7 +382,7 @@ class Board:
                     self.white_count += 1
                 if c == "B":
                     self.black_count += 1
-
+            self.tie_counter -= 1;
             self.saved_move.pop(-1)
         else:
             raise Exception("Cannot undo operation")
