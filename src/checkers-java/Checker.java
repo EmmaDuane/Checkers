@@ -104,7 +104,6 @@ public class Checker {
 	    	multiple_jump.get(x).insertElementAt(new Position(row,col),0);
 	    	Move tempMove = new Move(multiple_jump.get(x));
 	    	tempMove.isCapture = true;
-	    	System.out.println("Capture move: " + tempMove.toString());
 	    	result.addElement(tempMove);
 	    }
 	    board.board.get(row).get(col).color = selfColor;
