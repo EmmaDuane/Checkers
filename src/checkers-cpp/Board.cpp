@@ -443,9 +443,10 @@ void Board:: Undo(){
                 else{
                     this->whiteCount += 1;
                 }
-                this->tieCount -= 1;
+                
 
             }
+        this->tieCount -= 1;
         saved_move_list.pop_back();
         
         
