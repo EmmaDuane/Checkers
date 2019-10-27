@@ -301,7 +301,7 @@ public class Board {
                 if (Math.abs(start.getX()-target.getX()) == 2)
                 {
                     // new
-                    Vector<Integer> temp_enemy_position = null;
+                    Vector<Integer> temp_enemy_position = new Vector<Integer>();
                     //end
 
                     if_capture = true;
@@ -323,6 +323,7 @@ public class Board {
                     if (!is_start_check_king)
                         temp_saved_move.become_king = true;
                     // end
+                    temp_saved_move.become_king = false;
                     this.board.get(target.getX()).get(target.getY()).becomeKing();
                 }
                 else if (turn == "W"  && target.getX() == 0) {
@@ -330,6 +331,7 @@ public class Board {
                     if (!is_start_check_king)
                         temp_saved_move.become_king = true;
                     // end
+                    temp_saved_move.become_king = false;
                     this.board.get(target.getX()).get(target.getY()).becomeKing();
                 }
                 // new

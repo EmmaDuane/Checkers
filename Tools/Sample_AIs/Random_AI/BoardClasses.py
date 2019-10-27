@@ -141,14 +141,17 @@ class Board:
                     saved_enemy_position.append((capture_position[0],capture_position[1],self.board[capture_position[0]][capture_position[1]].color,self.board[capture_position[0]][capture_position[1]].is_king))
                     self.board[capture_position[0]][capture_position[1]] = Checker.Checker(".", [capture_position[0], capture_position[1]])
                     # capture
-
-                if (turn == 'B' and target[0] == self.row - 1):
+                    if turn == "B":
+                        self.white_count -= 1
+                    else:
+                        self.black_count -= 1
+                if (turn == 'B' and target[0] == self.row - 1):# and not self.board[target[0]][target[1]].is_king):
                     if not is_start_checker_king:
                         temp_saved_move[2] = True
                     self.board[target[0]][target[1]].become_king()
                     #self.saved_move[2] = True
 
-                elif (turn == 'W' and target[0] == 0):
+                elif (turn == 'W' and target[0] == 0):# and not self.board[target[0]][target[1]].is_king):
                     if not is_start_checker_king:
                         temp_saved_move[2] = True
                     self.board[target[0]][target[1]].become_king()
@@ -266,7 +269,7 @@ class Board:
 
         return result
 
-    def is_win(self):
+    def is_win(self,turn):
         """
         this function tracks if any player has won
         @param :
@@ -274,24 +277,38 @@ class Board:
         @return :
         @raise :
         """
+        if turn == "W":
+            turn = 2
+        elif turn == "B":
+            turn =  1
         if self.tie_counter >= self.tie_max:
             return -1
+        W_has_move = True
+        B_has_move = True
+        if len(self.get_all_possible_moves(1)) == 0:
+            if turn != 1:
+                B_has_move = False
+        elif len(self.get_all_possible_moves(2)) == 0:
+            if turn != 2:
+                W_has_move = False
+
+        if W_has_move and not B_has_move:
+            return 2
+        elif not W_has_move and B_has_move:
+            return 1
+
         W = True
         B = True
-        if len(self.get_all_possible_moves(1)) == 0:
-            B = False
-        elif len(self.get_all_possible_moves(2)) == 0:
-            W = False
-        else:
-            for row in range(self.row):
-                for col in range(self.col):
-                    checker = self.board[row][col]
-                    if checker.color == 'W':
-                        W = False
-                    elif checker.color == 'B':
-                        B = False
-                    if not W and not B:
-                        return 0
+
+        for row in range(self.row):
+            for col in range(self.col):
+                checker = self.board[row][col]
+                if checker.color == 'W':
+                    W = False
+                elif checker.color == 'B':
+                    B = False
+                if not W and not B:
+                    return 0
         if W:
             return 2
         elif B:
@@ -361,7 +378,11 @@ class Board:
                 x,y,c,k = saved_enemy
                 self.board[x][y].color = c
                 self.board[x][y].is_king = k
-
+                if c == "W":
+                    self.white_count += 1
+                if c == "B":
+                    self.black_count += 1
+            self.tie_counter -= 1
             self.saved_move.pop(-1)
         else:
             raise Exception("Cannot undo operation")
@@ -375,19 +396,28 @@ class Board:
 if __name__ == "__main__":
 
 
-    b=Board(10,10,2)
-    b.board[4][3] = Checker.Checker("W", [4, 3])
-    b.board[4][5] = Checker.Checker("W", [4, 5])
-    b.board[6][5] = Checker.Checker("W", [6, 5])
-    b.board[8][1] = Checker.Checker("B", [8, 1])
-    b.board[2][7] = Checker.Checker("W", [2, 7])
-    b.board[2][5] = Checker.Checker("W", [2, 5])
-    b.board[2][3] = Checker.Checker("W", [2, 3])
+    b=Board(7,7,2)
+    b.board[1][3] = Checker.Checker("W", [1, 3])
 
-    b.board[8][1].become_king()
+
     b.show_board()
-    m = b.get_all_possible_moves("B")[0][0]
-    b.make_move(m,"B")
+    m = b.get_all_possible_moves("W")[0][0]
+    b.make_move(m,"W")
     b.show_board()
+    m = b.get_all_possible_moves("W")[0][0]
+    b.make_move(m,"W")
+    b.show_board()
+    m = b.get_all_possible_moves("W")[0][0]
+    b.make_move(m,"W")
+    b.show_board()
+    print("Undo")
     b.undo()
     b.show_board()
+    print("Undo")
+    b.undo()
+    b.show_board()
+    print("Undo")
+    b.undo()
+    b.show_board()
+
+

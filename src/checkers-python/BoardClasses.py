@@ -145,13 +145,13 @@ class Board:
                         self.white_count -= 1
                     else:
                         self.black_count -= 1
-                if (turn == 'B' and target[0] == self.row - 1):
+                if (turn == 'B' and target[0] == self.row - 1):# and not self.board[target[0]][target[1]].is_king):
                     if not is_start_checker_king:
                         temp_saved_move[2] = True
                     self.board[target[0]][target[1]].become_king()
                     #self.saved_move[2] = True
 
-                elif (turn == 'W' and target[0] == 0):
+                elif (turn == 'W' and target[0] == 0):# and not self.board[target[0]][target[1]].is_king):
                     if not is_start_checker_king:
                         temp_saved_move[2] = True
                     self.board[target[0]][target[1]].become_king()
@@ -396,16 +396,28 @@ class Board:
 if __name__ == "__main__":
 
 
-    b=Board(4,4,1)
-    b.initialize_game()
-    b.show_board()
+    b=Board(7,7,2)
+    b.board[1][3] = Checker.Checker("W", [1, 3])
 
-    b.make_move(b.get_all_possible_moves(1)[1][0],1)
-    b.make_move(b.get_all_possible_moves(1)[1][0], 1)
-    b.make_move(b.get_all_possible_moves(2)[1][0], 2)
-    b.show_board()
 
-    print(b.black_count)
+    b.show_board()
+    m = b.get_all_possible_moves("W")[0][0]
+    b.make_move(m,"W")
+    b.show_board()
+    m = b.get_all_possible_moves("W")[0][0]
+    b.make_move(m,"W")
+    b.show_board()
+    m = b.get_all_possible_moves("W")[0][0]
+    b.make_move(m,"W")
+    b.show_board()
+    print("Undo")
     b.undo()
     b.show_board()
-    print(b.black_count)
+    print("Undo")
+    b.undo()
+    b.show_board()
+    print("Undo")
+    b.undo()
+    b.show_board()
+
+

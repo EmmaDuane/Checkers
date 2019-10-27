@@ -340,6 +340,7 @@ void Board::makeMove(const Move& move, int player)
                 if(!is_start_checker_king){
                     temp_saved_move.become_king = true;
                 }
+                temp_saved_move.become_king = false;
                 this->board[target[0]][target[1]].becomeKing();
             }
             
@@ -347,6 +348,7 @@ void Board::makeMove(const Move& move, int player)
                 if(!is_start_checker_king){
                     temp_saved_move.become_king = true;
                 }
+                temp_saved_move.become_king = false;
                 this->board[target[0]][target[1]].becomeKing();
             }
             else{
