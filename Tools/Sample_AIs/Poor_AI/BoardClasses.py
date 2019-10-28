@@ -24,7 +24,7 @@ class Board:
     This class describes Board
     """
     opponent = {"W": "B", "B": "W"}
-    def __init__(self, row, col, p):
+    def __init__(self,col,row, p):
         """
         Intializes board: 
             M = number of rows
