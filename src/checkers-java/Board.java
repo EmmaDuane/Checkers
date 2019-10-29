@@ -84,6 +84,8 @@ public class Board {
             for (int j = 0;j < col;++j)
             {
                 this.board.get(i).add((new Checker(b.board.get(i).get(j).color,i,j)));
+                if (b.board.get(i).get(j).isKing)
+                    this.board.get(i).get(j).becomeKing();
             }
         }
     }
