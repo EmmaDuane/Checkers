@@ -322,18 +322,24 @@ public class Board {
                 }
                 if (turn == "B"  && target.getX() == this.row - 1) {
                     // new
-                    if (!is_start_check_king)
+                    if (!is_start_check_king){
                         temp_saved_move.become_king = true;
+                    }
+                    else{
+                        temp_saved_move.become_king = false;
+                    }  
                     // end
-                    temp_saved_move.become_king = false;
+                    
                     this.board.get(target.getX()).get(target.getY()).becomeKing();
                 }
                 else if (turn == "W"  && target.getX() == 0) {
                     // end
-                    if (!is_start_check_king)
+                    if (!is_start_check_king){
                         temp_saved_move.become_king = true;
-                    // end
-                    temp_saved_move.become_king = false;
+                    }
+                    else{
+                        temp_saved_move.become_king = false;
+                    }  
                     this.board.get(target.getX()).get(target.getY()).becomeKing();
                 }
                 // new
