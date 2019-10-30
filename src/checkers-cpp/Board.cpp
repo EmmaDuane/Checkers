@@ -312,6 +312,10 @@ void Board::makeMove(const Move& move, int player)
                 if_capture = true;
                 this->tieCount = 0;
                 Position capture_position {(start[0] + (int)(target[0]-start[0])/2), (start[1] + (int)(target[1]-start[1])/2)};
+                if(turn == "B")
+                    this->whiteCount--;
+                else
+                    this->blackCount--;
 
                 capture_positions.push_back(capture_position);
                 //record capture position
