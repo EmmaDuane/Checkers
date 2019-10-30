@@ -462,7 +462,7 @@ public class Board {
                 this.board.get(original_position.getX()).get(original_position.getY()).isKing =
                         this.board.get(target_position.getX()).get(target_position.getY()).isKing;
 
-            if (!(target_position == original_position))
+            if (!(target_position.equals(original_position)))
             {
                 this.board.get(target_position.getX()).get(target_position.getY()).color = ".";
                 this.board.get(target_position.getX()).get(target_position.getY()).isKing = false;
