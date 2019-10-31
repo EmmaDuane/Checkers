@@ -476,19 +476,28 @@ public class Board {
 
                 this.board.get(x).get(y).color = (c == 1? "B" : "W");
                 this.board.get(x).get(y).isKing = (k == 0? false : true);
-                if (c==1){
-                    this.blackCount += 1;
-                }
-                else{
-                    this.whiteCount += 1;
-                }
                 
             }
             this.tieCount -= 1;
             saved_move_list.remove(saved_move_list.size()-1);
         }
-
+        this.blackCount = 0;
+        this.whiteCount = 0;
+        for (int row = 0; row < this.row; row++) {
+            for (int col = 0; col < this.col; col++) {
+                if (this.board.get(row).get(col).color.equals("W"))
+                {
+                    this.whiteCount++;
+                }
+                else if (this.board.get(row).get(col).color.equals("B"))
+                {
+                    this.blackCount++;
+                }
+            
+            }
+        }
     }
+
 
 
 }

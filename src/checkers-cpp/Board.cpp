@@ -484,13 +484,6 @@ void Board:: Undo(){
             
             this->board[x][y].color = (c==1?"B":"W");
             this->board[x][y].isKing = (k==0?false:true);
-            if (c==1){
-                    this->blackCount += 1;
-                }
-                else{
-                    this->whiteCount += 1;
-                }
-                
 
             }
         this->tieCount -= 1;
@@ -498,6 +491,22 @@ void Board:: Undo(){
         
         
     }
+    this->blackCount = 0;
+    this->whiteCount = 0;
+    for (int row = 0; row < this->row; row++) {
+        for (int col = 0; col < this->col; col++) {
+            if (this->board[row][col].color == "W")
+            {
+                this->whiteCount++;
+            }
+            else if (this->board[row][col].color == "B")
+            {
+                 this->blackCount++;
+            }
+            
+        }
+    }
 }
+
 
 
