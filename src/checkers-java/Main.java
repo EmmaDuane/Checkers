@@ -10,7 +10,7 @@
             k = Integer.parseInt(args[2]),
             order = 0;
         String mode = args[3];
-        if ("m".equals(mode) || "manual".equals(mode))
+        if ("m".equals(mode) || "manual".equals(mode)|| "s".equals(mode) || "self".equals(mode))
             order = Integer.parseInt(args[4]);
         GameLogic main = new GameLogic(col, row, k, mode, order);
         main.Run();
