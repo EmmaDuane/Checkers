@@ -8,3 +8,5 @@ Fixed **cpp/java** undo function causing the wrong attributes of checkers. <br>
 Fixed **cpp/java** undo black counter and white counter.<br>
 Fixed **java** undo function (equal problem)<br>
 Make counters in **cpp/java/python** more stable.<br>
+# 11/05/2019
+Added a new feature (**cpp/java/python**): "self play mode" which can use to debug more efficiently.
