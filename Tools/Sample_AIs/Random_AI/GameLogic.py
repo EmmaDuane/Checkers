@@ -44,7 +44,7 @@ class GameLogic:
                 else:
                     winPlayer = 1
                 break
-            winPlayer = board.is_win()
+            winPlayer = board.is_win(player)
             board.show_board(fh)
             if(winPlayer != 0):
                 if self.mode == 'n':#Communate with peer to tell the result.
@@ -107,6 +107,18 @@ class GameLogic:
                     StudentAI(self.col, self.row, self.p))
                 self.ai_list.append(
                     ManualAI(self.col, self.row, self.p))
+            self.gameloop(fh)
+        elif self.mode == 's' or self.mode == 'self':
+            if kwargs['order'] == '1':
+                self.ai_list.append(
+                    StudentAI(self.col, self.row, self.p))
+                self.ai_list.append(
+                    StudentAI(self.col, self.row, self.p))
+            else:
+                self.ai_list.append(
+                    StudentAI(self.col, self.row, self.p))
+                self.ai_list.append(
+                    StudentAI(self.col, self.row, self.p))
             self.gameloop(fh)
         elif self.mode == 'l' or self.mode == 'local' :
             self.ai_list.append(

@@ -357,6 +357,24 @@ class Board:
         elif self.col * self.p % 2 != 0:
             raise InvalidParameterError("N*P is odd -- must be even")
 
+    def check_initial_variable(self):
+        """
+        Checks the integrity of the initial board variables provided (M,N,P,Q)
+        @param :
+        @param :
+        @return :
+        @raise InvalidParameterError: raises this exception if there is a problem with the provided variables
+        """
+        # Q > 0
+        if self.row - 2 * self.p <= 0:
+            raise  InvalidParameterError("Q <= 0")
+        # M = 2P + Q
+        elif self.row != 2 * self.p + (self.row - 2 * self.p):
+            raise InvalidParameterError("M != 2P + Q")
+        # N*P is even
+        elif self.col * self.p % 2 != 0:
+            raise InvalidParameterError("N*P is odd -- must be even")
+
     def undo(self):
         if self.saved_move != []:
             temp_saved_move = self.saved_move[-1]
@@ -378,14 +396,18 @@ class Board:
                 x,y,c,k = saved_enemy
                 self.board[x][y].color = c
                 self.board[x][y].is_king = k
-                if c == "W":
-                    self.white_count += 1
-                if c == "B":
-                    self.black_count += 1
             self.tie_counter -= 1
             self.saved_move.pop(-1)
         else:
             raise Exception("Cannot undo operation")
+        self.black_count = 0
+        self.white_count = 0
+        for i in range(self.row):
+            for j in range(self.col):
+                if self.board[i][j].color=="W":
+                    self.white_count += 1
+                elif self.board[i][j].color == "B":
+                    self.black_count += 1
 
 
 
