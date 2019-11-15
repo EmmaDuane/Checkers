@@ -9,8 +9,8 @@ We are following the javadoc docstring format which is:
 import os
 import sys
 
-sys.path.append("./Sample_AIs/Poor_AI/")
-sys.path.append("./Sample_AIs/Poor_AI/AI_Extensions/")
+sys.path.append("./Sample_AIs/Random_AI/")
+sys.path.append("./Sample_AIs/Random_AI/AI_Extensions/")
 
 from GameLogic import GameLogic
 from socket import *
