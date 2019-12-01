@@ -15,3 +15,6 @@ Added a new feature (**cpp/java/python**): "self play mode" which can be used to
 This update is about Poor AI:
 1. Added support for 3.6.8
 2. Fix some problem that causes Poor AI crashing in some rare cases.
+
+# 11/14/2019
+Added the Good AI.
