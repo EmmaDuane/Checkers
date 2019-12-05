@@ -18,3 +18,6 @@ This update is about Poor AI:
 
 # 11/30/2019
 Added the Good AI.
+
+# 12/05/2019
+Blocked some invalid moves.

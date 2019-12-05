@@ -336,6 +336,9 @@ public class Board {
                     // end
                     
                     this.board.get(target.getX()).get(target.getY()).becomeKing();
+                    if (!is_start_check_king){
+                        break;
+                    }
                 }
                 else if (turn == "W"  && target.getX() == 0) {
                     // end
@@ -346,6 +349,9 @@ public class Board {
                         temp_saved_move.become_king = false;
                     }  
                     this.board.get(target.getX()).get(target.getY()).becomeKing();
+                    if (!is_start_check_king){
+                        break;
+                    }
                 }
                 // new
                 else
