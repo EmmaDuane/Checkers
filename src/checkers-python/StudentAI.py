@@ -14,6 +14,30 @@ class StudentAI():
         self.color = ''
         self.opponent = {1:2,2:1}
         self.color = 2
+        
+        
+# Alpha-beta pruning:
+#   def ab_pruning(moves, move):
+#       max = max_val(moves, move, -inf, +inf)
+#       return move with max value
+#   def max_val(moves, move, alpha, beta):
+#       if end of game: return current move
+#       for i in moves:
+#           min = min_val(moves, i, alpha, beta)
+#           if min >= beta
+#               return +inf
+#           alpha = max(alpha, min)
+#       return alpha
+#   def min_val(moves, move, alpha, beta):
+#       if end of game: return current move
+#       for i in moves:
+#           min = max_val(moves, i, alpha, beta)
+#           if alpha >= min
+#               return -inf
+#           beta = min(beta, min)
+#       return beta
+
+
     def get_move(self,move):
         if len(move) != 0:
             self.board.make_move(move,self.opponent[self.color])
