@@ -1,6 +1,6 @@
 from subprocess import Popen, PIPE
 import select
-import fcntl, os
+#import fcntl, os
 import time
 
 class Communicator(object):

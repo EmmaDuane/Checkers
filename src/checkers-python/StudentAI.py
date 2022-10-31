@@ -15,18 +15,39 @@ class StudentAI():
         self.opponent = {1:2,2:1}
         self.color = 2
 
+    def get_move(self, move):
+        if len(move) != 0:
+            self.board.make_move(move, self.opponent[self.color])
+        else:
+            self.color = 1
+        moves = self.board.get_all_possible_moves(self.color)
+        # old code:
+        #index = randint(0,len(moves)-1)
+        #inner_index =  randint(0,len(moves[index])-1)
+        #index represents a checker, inner_index represents its possible moves
+        #move = moves[index][inner_index]
+        #self.board.make_move(move, self.color)
+        #return move
+        move = ab_pruning(moves, move)
+        self.board.make_move(move, self.color)
+        return move
+
 # Useful functions from boardclass:
 #   is_valid_move(self, chess_row, chess_col, target_row, target_col, turn)
 #   is_win(self,turn)
-        
-# Alpha-beta pruning:
+
+#minimax algorithm
+def minimax(moves, move):
+    if is_win(self, turn):
+        return move
+    # Alpha-beta pruning:
 def ab_pruning(moves, move):
     max = max_val(moves, move, -sys.maxsize, maxsize)
     return move # return move with max value
 
 
 def max_val(moves, move, alpha, beta):
-    # if end of game: return (state of current move, move)
+        # if end of game: return (state of current move, move)
     if is_win(self, turn):
         return sys.maxsize
     return -sys.maxsize
@@ -40,7 +61,7 @@ def max_val(moves, move, alpha, beta):
 
 
 def min_val(moves, move, alpha, beta):
-    # if end of game: return (state of current move, move)
+        # if end of game: return (state of current move, move)
     if is_win(self, turn):
         return -sys.maxsize
     else:
@@ -53,18 +74,4 @@ def min_val(moves, move, alpha, beta):
     return beta
 
 
-    def get_move(self,move):
-        if len(move) != 0:
-            self.board.make_move(move,self.opponent[self.color])
-        else:
-            self.color = 1
-        moves = self.board.get_all_possible_moves(self.color)
-        # old code:
-            # index = randint(0,len(moves)-1)
-            # inner_index =  randint(0,len(moves[index])-1)
 
-            # index represents a checker, inner_index represents its possible moves
-            # move = moves[index][inner_index]
-        move = ab_pruning(moves, move)
-        self.board.make_move(move,self.color)
-        return move
