@@ -42,6 +42,10 @@ class StudentAI():
                     temp = moves[pieces][positions]
                     jump = len(moves[pieces][positions])
                     king_flag = True
+        mymove = self.minimax(moves)
+        print("here", mymove)
+        self.board.make_move(mymove, self.color)
+        return mymove
 
         if temp != 0 or king_flag:
             move = temp
@@ -89,42 +93,69 @@ class StudentAI():
             return 0, ([])
         v = -sys.maxsize
         make_move = moves[0][0]
-        for pieces in range(len(moves)):
-            for positions in range(len(moves[pieces])):
-                self.board.make_move(moves[pieces][positions], self.color)
-                temp_moves = self.board.get_all_possible_moves(self.color)
-                min, min_move = self.min_val(temp_moves, a, b)
-                if min > v:
-                    v = min
-                    make_move = moves[pieces][positions]
-                    a = max(a, v)
-                if a >= b:
-                    self.board.undo()
-                    return v, moves[pieces][positions]
-                self.board.undo()
+        pick_move, v = self.heuristic(moves,v)
+        self.board.make_move(pick_move, self.color)
+        temp_moves = self.board.get_all_possible_moves(self.opponent[self.color])
+        min, min_move = self.min_val(temp_moves, a, b)
+        print("Move returned:", pick_move)
+        if min > v:
+            v = min
+            make_move = pick_move
+            a = max(a, v)
+        if a >= b:
+            self.board.undo()
+            return v, pick_move
+        self.board.undo()
         return v, make_move
 
     def min_val(self, moves, a, b):
         # if end of game: return (win/lose/tie, move)
+        print(self.board.black_count, self.board.white_count)
         if len(moves) == 0:
             if self.board.is_win(self.color) == self.color:
-                return sys.maxsize, ([])
-            if self.board.is_win(self.color) != 0:
                 return -sys.maxsize, ([])
+            if self.board.is_win(self.color) != 0:
+                return sys.maxsize, ([])
             return 0, ([])
-        v = sys.maxsize
         make_move = moves[0][0]
+        v = sys.maxsize
+        pick_move,v = self.heuristic(moves,v)
+        self.board.make_move(pick_move, self.opponent[self.color])
+        temp_moves = self.board.get_all_possible_moves(self.color)
+        max, max_move = self.max_val(temp_moves, a, b)
+        if max < v:
+            v = max
+            make_move = pick_move
+            b = min(b, v)
+        if a >= b:
+            print(a,b)
+            self.board.undo()
+            return v, pick_move
+        self.board.undo()
+        return v, make_move
+
+
+    def heuristic(self, moves,v):
+        jump = 2  # default is 2 since each move consists a list of at least length 2
+        temp = 0
+        king_flag = False  # set to true if a piece can be made a king
         for pieces in range(len(moves)):
             for positions in range(len(moves[pieces])):
-                self.board.make_move(moves[pieces][positions], self.color)
-                temp_moves = self.board.get_all_possible_moves(self.color)
-                max, max_move = self.max_val(temp_moves, a, b)
-                if max < v:
-                    v = max
-                    make_move = moves[pieces][positions]
-                    b = min(b, v)
-                if a >= b:
-                    self.board.undo()
-                    return v, moves[pieces][positions]
-                self.board.undo()
-        return v, make_move
+                if len(moves[pieces][positions]) > jump:
+                    temp = moves[pieces][positions]
+                    jump = len(moves[pieces][positions])
+                elif (len(moves[pieces][positions]) == jump) and self.canKing(moves[pieces][positions]):
+                    temp = moves[pieces][positions]
+                    jump = len(moves[pieces][positions])
+                    king_flag = True
+        if temp != 0 or king_flag:
+            v+=1
+            move = temp
+            return move, v
+        else:
+            # pick random move:
+            index = randint(0, len(moves) - 1)
+            inner_index = randint(0, len(moves[index]) - 1)
+            # index represents a checker, inner_index represents its possible moves
+            move = moves[index][inner_index]
+            return move, v
