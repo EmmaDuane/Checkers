@@ -87,9 +87,9 @@ class StudentAI():
         # if end of game: return (win/lose/tie, move)
         if len(moves) == 0:
             if self.board.is_win(self.color) == self.color:
-                return sys.maxsize, ([])
-            if self.board.is_win(self.color) != 0:
                 return -sys.maxsize, ([])
+            if self.board.is_win(self.color) != 0:
+                return sys.maxsize, ([])
             return 0, ([])
         v = -sys.maxsize
         make_move = moves[0][0]
@@ -113,9 +113,9 @@ class StudentAI():
         print(self.board.black_count, self.board.white_count)
         if len(moves) == 0:
             if self.board.is_win(self.color) == self.color:
-                return -sys.maxsize, ([])
-            if self.board.is_win(self.color) != 0:
                 return sys.maxsize, ([])
+            if self.board.is_win(self.color) != 0:
+                return -sys.maxsize, ([])
             return 0, ([])
         make_move = moves[0][0]
         v = sys.maxsize
