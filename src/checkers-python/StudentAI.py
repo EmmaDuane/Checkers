@@ -3,6 +3,8 @@ from BoardClasses import Move
 from BoardClasses import Board
 from Checker import Checker
 import sys
+import math
+import random
 #The following part should be completed by students.
 #Students can modify anything except the class name and existing functions and variables.
 class StudentAI():
@@ -28,134 +30,130 @@ class StudentAI():
         else:
             self.color = 1
         #############################
-        moves = self.board.get_all_possible_moves(self.color)
-        # loops through all moves, whichever moves jumps more than once, use that move
-        jump = 2    # default is 2 since each move consists a list of at least length 2
-        temp = 0
-        king_flag = False   # set to true if a piece can be made a king
-        for pieces in range(len(moves)):
-            for positions in range(len(moves[pieces])):
-                if len(moves[pieces][positions]) > jump:
-                    temp = moves[pieces][positions]
-                    jump = len(moves[pieces][positions])
-                elif (len(moves[pieces][positions]) == jump) and self.canKing(moves[pieces][positions]):
-                    temp = moves[pieces][positions]
-                    jump = len(moves[pieces][positions])
-                    king_flag = True
-        mymove = self.minimax(moves)
-        print("here", mymove)
-        self.board.make_move(mymove, self.color)
-        return mymove
+        temp = self.board.get_all_possible_moves(self.color)
+        moves = []
+        for pieces in range(len(temp)):
+            for positions in range(temp[pieces]):
+                curr_move = [pieces, temp[pieces][positions]]
+                next_moves.append(curr_move)
+        my_move = self.mcts(board, moves, self.color)
+        self.board.make_move(my_move, self.color)
+        return my_move
 
-        if temp != 0 or king_flag:
-            move = temp
-            self.board.make_move(move, self.color)
-            return move
+    # MCTS algorithm
+
+    #   Tree traversal:
+    #       while node is not leaf:
+    #           starting at initial node, calculate ucb and choose node with max ucb
+    #       once leaf node is found:
+    #           check how many times leaf node has been sampled
+    #           if leaf node has never been sampled then rollout(node)
+    #           if leaf node has been sampled then expand(node)
+    #   Node expansion:
+    #       add new node to tree for every available action
+    #       current node = new node
+    #       rollout(node)
+    #   Simulation rollout:
+    #       while True:
+    #           if node is leaf: return value(node)
+    #           randomly select child node to simulate
+    #           node = result of simulation
+    #   UCB:
+    #       Vi = average reward/value of all nodes beneath this node
+    #       N = number of times the parent node has been visited, and
+    #       ni = number of times the child node i has been visited
+
+class TreeNode():
+
+    def __init__(self, board, moves, last_move = None, parent = None):
+        self.board = board
+        self.moves = moves          # move that resulted in this TreeNode
+        self.move = last_move
+        self.parent = parent
+        self.children = {}
+        moves = moves
+        if len(moves) == 0:         # check if node is leaf/terminal
+            self.is_leaf = False
         else:
-            # pick random move:
-            index = randint(0,len(moves)-1)
-            inner_index = randint(0, len(moves[index])-1)
-            # index represents a checker, inner_index represents its possible moves
-            move = moves[index][inner_index]
-            self.board.make_move(move, self.color)
-            return move
-        ##############################
-        # move = self.minimax(moves)
-        # self.board.make_move(move, self.color)
-        # return move
+            self.is_leaf = True
+        self.samples = 0        # number of times node has been sampled
+        self.wins = 0           # number of times node led to win
+        self.is_expanded = self.is_leaf     # is node completely expanded
 
-    def canKing(self, move):                # returns true if move will make checker king
-        color = self.color
-        checker = Checker(color, move[0])
-        row = checker.row
-        if checker.is_king:                  # return false if already king
-            return False
-        if checker.color == 'W':
-            if row == 0:
-                return True
-            return False
-        if row == self.row - 1:
-            return True
-        return False
+class MCTS():
 
-    # Minimax:
-    def minimax(self, moves):
-        val, move = self.max_val(moves, -sys.maxsize, sys.maxsize)
-        return move   # return move with max value along with its value
+    def __init__(self, board, moves, color):
+        self.color = color
+        self.root = TreeNode(board, moves)
 
-    def max_val(self, moves, a, b):
-        # if end of game: return (win/lose/tie, move)
-        if len(moves) == 0:
-            if self.board.is_win(self.color) == self.color:
-                return -sys.maxsize, ([])
-            if self.board.is_win(self.color) != 0:
-                return sys.maxsize, ([])
-            return 0, ([])
-        v = -sys.maxsize
-        make_move = moves[0][0]
-        pick_move, v = self.heuristic(moves,v)
-        self.board.make_move(pick_move, self.color)
-        temp_moves = self.board.get_all_possible_moves(self.opponent[self.color])
-        min, min_move = self.min_val(temp_moves, a, b)
-        print("Move returned:", pick_move)
-        if min > v:
-            v = min
-            make_move = pick_move
-            a = max(a, v)
-        if a >= b:
-            self.board.undo()
-            return v, pick_move
-        self.board.undo()
-        return v, make_move
+    def tree_search(self):
+        for i in range(100):                 # change, need to decide on stopping condition
+            curr_node = self.select_node(self.root)         # select next node
+            wins = self.rollout(curr_node)  # perform rollout on node
+            self.backpropogate(curr_node, wins)   # backpropogate
+        return self.best_move(curr_node, 0)
 
-    def min_val(self, moves, a, b):
-        # if end of game: return (win/lose/tie, move)
-        print(self.board.black_count, self.board.white_count)
-        if len(moves) == 0:
-            if self.board.is_win(self.color) == self.color:
-                return sys.maxsize, ([])
-            if self.board.is_win(self.color) != 0:
-                return -sys.maxsize, ([])
-            return 0, ([])
-        make_move = moves[0][0]
-        v = sys.maxsize
-        pick_move,v = self.heuristic(moves,v)
-        self.board.make_move(pick_move, self.opponent[self.color])
-        temp_moves = self.board.get_all_possible_moves(self.color)
-        max, max_move = self.max_val(temp_moves, a, b)
-        if max < v:
-            v = max
-            make_move = pick_move
-            b = min(b, v)
-        if a >= b:
-            print(a,b)
-            self.board.undo()
-            return v, pick_move
-        self.board.undo()
-        return v, make_move
+    def select_node(self, node):
+        while len(node.moves) != 0:         # while node is not a leaf
+            if not node.is_expanded:        # if node is not expanded then expand it
+                self.expand_node(node)
+            else:                           # if node is expanded then get the best move
+                node = self.best_move(node, 2)      # need to decide on exportation constant
+        return node
 
+    def expand_node(self, node):
+        for move in range(len(node.moves)):    # for each move in node.moves:
+            node.board.board.make_move(move, self.color)
+            temp = self.board.board.get_all_possible_moves(self.color)
+            self.board.board.undo()
+            next_moves = []
+            for pieces in range(len(temp)):
+                for positions in range(temp[pieces]):
+                    curr_move = [pieces, temp[pieces][positions]]
+                    next_moves.append(curr_move)
+            child = TreeNode(self.board, next_moves, move, node)
+            if child.move not in node.children.move:      # check if child in node.children, add if not
+                node.children.update(child)
+                if len(node.moves) == len(node.children):   # if node fully expanded,
+                    node.is_expanded = True                 # then set node.is_expanded = True
+                return child
+        return None
 
-    def heuristic(self, moves,v):
-        jump = 2  # default is 2 since each move consists a list of at least length 2
-        temp = 0
-        king_flag = False  # set to true if a piece can be made a king
-        for pieces in range(len(moves)):
-            for positions in range(len(moves[pieces])):
-                if len(moves[pieces][positions]) > jump:
-                    temp = moves[pieces][positions]
-                    jump = len(moves[pieces][positions])
-                elif (len(moves[pieces][positions]) == jump) and self.canKing(moves[pieces][positions]):
-                    temp = moves[pieces][positions]
-                    jump = len(moves[pieces][positions])
-                    king_flag = True
-        if temp != 0 or king_flag:
-            v+=1
-            move = temp
-            return move, v
-        else:
-            # pick random move:
-            index = randint(0, len(moves) - 1)
-            inner_index = randint(0, len(moves[index]) - 1)
-            # index represents a checker, inner_index represents its possible moves
-            move = moves[index][inner_index]
-            return move, v
+    def rollout(self, node):
+        if len(node.moves) == 0:     # base case: check if game over
+            if node.board.board.is_win(self.color) == self.color:
+                return 1
+            return 0
+        # randomly select move for self and for opponent
+        child = random.choice(node.children)
+        node.board.board.make_move(child.move, self.color)
+        opponent_color = 1 if self.color == 2 else 1
+        opponent_moves = []
+        temp = self.board.board.get_all_possible_moves(opponent_color)
+        for pieces in range(len(temp)):
+            for positions in range(temp[pieces]):
+                curr_move = [pieces, temp[pieces][positions]]
+                opponent_moves.append(curr_move)
+        opponent_move = random.choice(opponent_moves)
+        node.board.board.make_move(opponent_move, opponent_color)
+        result = self.rollout(child)
+        self.board.board.undo()
+        return result
+
+    def backpropogate(self, node, wins):
+        while Node is not None:     # update node.samples & node.wins
+            node.samples += 1
+            node.wins += wins
+            node = node.parent
+
+    def best_move(self, node, exploration_const):
+        # return move with highest win/sample ratio
+        max = -sys.maxsize
+        for child in node.children:
+            # calculate UCT
+            uct = (child.wins / child.samples)
+            uct += exploration_const * math.sqrt(math.log(node.samples) / child.samples)
+            if uct > max:
+                max = uct
+                max_move = child.move
+        return max_move
