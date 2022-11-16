@@ -5,6 +5,7 @@ from Checker import Checker
 import sys
 import math
 import random
+
 #The following part should be completed by students.
 #Students can modify anything except the class name and existing functions and variables.
 class StudentAI():
@@ -34,10 +35,7 @@ class StudentAI():
         moves = []
         for pieces in range(len(temp)):
             for positions in range(len(temp[pieces])):
-                # curr_move = [pieces, temp[pieces][positions]]
-                # moves.append(curr_move)
                 moves.append(temp[pieces][positions])
-        print(moves)
         mcts = MCTS(self.board, moves, self.color)
         my_move = mcts.tree_search()
         self.board.make_move(my_move, self.color)
@@ -70,7 +68,7 @@ class TreeNode():
         self.move = last_move
         self.parent = parent
         self.children = []
-        moves = moves
+        self.moves = moves
         if len(moves) == 0:         # check if node is leaf/terminal
             self.is_leaf = True
         else:
@@ -116,8 +114,6 @@ class MCTS():
             next_moves = []
             for pieces in range(len(temp)):
                 for positions in range(len(temp[pieces])):
-                    # curr_move = [pieces, temp[pieces][positions]]
-                    # next_moves.append(curr_move)
                     next_moves.append(temp[pieces][positions])
             child = TreeNode(self.board, next_moves, move, node)
             if child not in node.children:      # check if child in node.children, add if not
