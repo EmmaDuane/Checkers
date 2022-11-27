@@ -92,7 +92,8 @@ class MCTS():
         minWins = 0;
         bestMove = random.choice(self.root.children)
         for x in self.root.children:
-            if x.wins> minWins:
+            print(x.wins)
+            if x.wins < minWins:
                 minWins = x.wins
                 bestMove = x
         print("Best Move is: ",bestMove.move, bestMove.wins)
@@ -109,7 +110,7 @@ class MCTS():
             child = TreeNode(self.board, node.opponent_color, next_moves, move, node)
             node.children.append(child)
             #iterations
-            for i in range(1000):
+            for i in range(200):
                 child.wins+=self.expand_until_end(child,0)
             self.board.undo()
         return node
@@ -135,7 +136,8 @@ class MCTS():
         if (chosenChild.color == self.color):
             #if AI turn, do heuristics to find next move
             #heuristic function should actually return a list of ranked moves
-            rChoice = random.choice(chosenChild.moves)
+            rChoice = self.heuristic(chosenChild)
+            #rChoice = random.choice(chosenChild.moves)
             chosenChild.board.make_move(rChoice, chosenChild.color)
             tempMoves = chosenChild.board.get_all_possible_moves(chosenChild.opponent_color)  # get moves for the next player
             nextMoves = []
@@ -148,7 +150,8 @@ class MCTS():
             return self.expand_until_end(tempChild, ex_depth+1)
         else:
             #if enemy turn, do a random move for them
-            rChoice = random.choice(chosenChild.moves)
+            rChoice = self.heuristic(chosenChild)
+            #rChoice = random.choice(chosenChild.moves)
             chosenChild.board.make_move(rChoice, chosenChild.color)
             tempMoves = chosenChild.board.get_all_possible_moves(chosenChild.opponent_color)  # get moves for the next player
             nextMoves = []
@@ -160,3 +163,35 @@ class MCTS():
             chosenChild.children.append(tempChild)
             return self.expand_until_end(tempChild,ex_depth+1)
 
+    def heuristic(self, chosenChild):
+        jump = 2  # default is 2 since each move consists a list of at least length 2
+        temp = 0
+        king_flag = False  # set to true if a piece can be made a king
+        for move in chosenChild.moves:
+            if len(move) > jump:
+                temp = move
+                jump = len(move)
+            elif (len(move) == jump) and self.canKing(chosenChild,move):
+                temp = move
+                jump = len(move)
+                king_flag = True
+        if temp != 0 or king_flag:
+            bestmove = temp
+            return bestmove
+        else:
+            bestmove = random.choice(chosenChild.moves)
+            return bestmove
+
+    def canKing(self, chosenChild,move):  # returns true if move will make checker king
+        color = self.color
+        checker = Checker(color, move)
+        row = checker.row
+        if checker.is_king:  # return false if already king
+            return False
+        if checker.color == 'W':
+            if row == 0:
+                return True
+            return False
+        if row == chosenChild.board.row - 1:
+            return True
+        return False
