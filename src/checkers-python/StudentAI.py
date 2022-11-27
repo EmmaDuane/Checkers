@@ -111,24 +111,20 @@ class MCTS():
             #iterations
             for i in range(1000):
                 child.wins+=self.expand_until_end(child,0)
-            print(child.wins)
             self.board.undo()
-            return node
+        return node
     def expand_until_end(self, chosenChild, ex_depth): #rollout function
         #check to see if at leaf node
         if(len(chosenChild.moves) == 0):
             if chosenChild.color == self.color and chosenChild.board.is_win(self.color) == self.color:
-                print("won")
                 for i in range(ex_depth):
                     self.board.undo()
                 return 1
             elif chosenChild.color == self.opponent_color and chosenChild.board.is_win(self.opponent_color) == self.opponent_color:
-                print("loss")
                 for i in range(ex_depth):
                     self.board.undo()
                 return -1
             else:
-                print("unknown")
                 for i in range(ex_depth):
                     self.board.undo()
                 return 0
