@@ -36,8 +36,9 @@ class StudentAI():
         for pieces in range(len(temp)):
             for positions in range(len(temp[pieces])):
                 moves.append(temp[pieces][positions])
-        mcts = MCTS(self.board, moves, self.color)
+        mcts = MCTS(self.board, self.color, moves)
         my_move = mcts.tree_search()
+        my_move = Move(my_move.move)
         self.board.make_move(my_move, self.color)
         return my_move
 
@@ -62,93 +63,84 @@ class StudentAI():
 
 class TreeNode():
 
-    def __init__(self, board, moves, last_move=None, parent=None):
+    def __init__(self, board, color, moves, last_move=None, parent=None):
         self.board = board
-        self.moves = moves          # move that resulted in this TreeNode
-        self.move = last_move
+        self.color = color
+        self.opponent_color = 1 if color == 2 else 2
+        self.moves = moves
+        self.move = last_move       # move that resulted in this TreeNode
         self.parent = parent
         self.children = []
         self.moves = moves
-        if len(moves) == 0:         # check if node is leaf/terminal
-            self.is_leaf = True
-        else:
-            self.is_leaf = False
+        self.is_leaf = True if moves == 0 or len(moves) == 0 else False    # check if node is leaf/terminal
         self.samples = 0        # number of times node has been sampled
         self.wins = 0           # number of times node led to win
         self.is_expanded = self.is_leaf     # is node completely expanded
 
 class MCTS():
 
-    def __init__(self, board, moves, color):
+    def __init__(self, board, color, moves):
         self.color = color
+        self.opponent_color = 1 if color == 2 else 2
         self.board = board
-        self.root = TreeNode(board, moves)
+        self.root = TreeNode(board, color,moves)
 
     def tree_search(self):
-        for i in range(100):                 # change, need to decide on stopping condition
+        for i in range(10):                 # change, need to decide on stopping condition
             curr_node = self.select_node(self.root)         # select next node
             if curr_node is None:
                 curr_node = random.choice(self.root.children)
             wins = self.rollout(curr_node)  # perform rollout on node
             self.backpropogate(curr_node, wins)   # backpropogate
-        return self.best_move(curr_node, 0)
+        return self.best_move(self.root, 2)
 
     def select_node(self, node):
-        while node is not None and len(node.moves) != 0:         # while node is not a leaf
-            if not node.is_expanded:        # if node is not expanded then expand it
-                self.expand_node(node)
-            else:                           # if node is expanded then get the best move
-                node = self.best_move(node, 2)      # need to decide on exportation constant
-        return node
+        while node.is_expanded:
+            node = self.best_move(node, 2)
+            if node is None:
+                return node
+        return self.expand_node(node) or node
 
     def expand_node(self, node):
-        if len(node.moves) == 0:
-            return None
         for move in node.moves:    # for each move in node.moves:
             try:
-                self.board.make_move(move, self.color)
+                self.board.make_move(move, node.color)
+                temp = self.board.get_all_possible_moves(node.opponent_color)
+                self.board.undo()
+                next_moves = []
+                for pieces in range(len(temp)):
+                    for positions in range(len(temp[pieces])):
+                        next_moves.append(temp[pieces][positions])
+                child = TreeNode(self.board, node.opponent_color, next_moves, move, node)
+                if child not in node.children:  # check if child in node.children, add if not
+                    node.children.append(child)
+                    if len(node.moves) == len(node.children):  # if node fully expanded,
+                        node.is_expanded = True  # then set node.is_expanded = True
+                    return child
             except:
                 continue
-            temp = self.board.get_all_possible_moves(self.color)
-            self.board.undo()
-            next_moves = []
-            for pieces in range(len(temp)):
-                for positions in range(len(temp[pieces])):
-                    next_moves.append(temp[pieces][positions])
-            child = TreeNode(self.board, next_moves, move, node)
-            if child not in node.children:      # check if child in node.children, add if not
-                node.children.append(child)
-                if len(node.moves) == len(node.children):   # if node fully expanded,
-                    node.is_expanded = True                 # then set node.is_expanded = True
-                return None
 
     def rollout(self, node):
         if len(node.children) == 0:     # base case: check if game over
             if node.board.is_win(self.color) == self.color:
                 return 1
+            elif node.board.is_win(self.color) == self.opponent_color:
+                return -1
             return 0
         # randomly select move for self and for opponent
         child = random.choice(node.children)
-        node.board.make_move(child.move, self.color)
-        opponent_color = 1 if self.color == 2 else 1
-        opponent_moves = []
-        temp = self.board.get_all_possible_moves(opponent_color)
-        for pieces in range(len(temp)):
-            for positions in range(len(temp[pieces])):
-                # curr_move = [pieces, temp[pieces][positions]]
-                # opponent_moves.append(curr_move)
-                opponent_moves.append(temp[pieces][positions])
-        opponent_move = random.choice(opponent_moves)
-        node.board.make_move(opponent_move, opponent_color)
+        self.board.make_move(child.move, child.color)
         result = self.rollout(child)
         self.board.undo()
         return result
 
     def backpropogate(self, node, wins):
-        while node is not None:     # update node.samples & node.wins
-            node.samples += 1
-            node.wins += wins
-            node = node.parent
+        if node is None:
+            return
+        # update node.samples & node.wins
+        node.samples += 1
+        node.wins += wins
+        self.backpropogate(node.parent, wins)
 
     def best_move(self, node, exploration_const):
         # return node with highest win/sample ratio
@@ -165,4 +157,6 @@ class MCTS():
             if uct > max:
                 max = uct
                 max_child = child
+        if max_child is None:
+            max_child = random.choice(node.children)
         return max_child
