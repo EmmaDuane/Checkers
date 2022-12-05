@@ -5,7 +5,7 @@
       <sourceFolder url="file://$MODULE_DIR$/src/checkers-python" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/checkers-python/AI_Extensions" isTestSource="false" />
     </content>
-    <orderEntry type="jdk" jdkName="Remote Python 3.10.6 (/home/cleond/.virtualenvs/Checkers_Student/bin/python) (2)" jdkType="Python SDK" />
+    <orderEntry type="jdk" jdkName="Remote Python 3.10.6 (/home/cleond/.virtualenvs/Checkers_Student/bin/python)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
   <component name="TestRunnerService">

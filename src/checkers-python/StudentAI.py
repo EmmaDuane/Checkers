@@ -71,7 +71,6 @@ class TreeNode():
         self.move = last_move       # move that resulted in this TreeNode
         self.parent = parent
         self.children = []
-        self.moves = moves
         self.is_leaf = True if moves == 0 or len(moves) == 0 else False    # check if node is leaf/terminal
         self.samples = 0        # number of times node has been sampled
         self.wins = 0           # number of times node led to win
@@ -110,7 +109,7 @@ class MCTS():
             child = TreeNode(self.board, node.opponent_color, next_moves, move, node)
             node.children.append(child)
             #iterations
-            for i in range(200):
+            for i in range(50):
                 child.wins+=self.expand_until_end(child,0)
             self.board.undo()
         return node
@@ -131,7 +130,9 @@ class MCTS():
                 return 0
         if ex_depth > 350:
             print("expansion depth reached")
+
             return 0
+
         #self.color should be the color of our AI, below checks to see whose turn it is
         if (chosenChild.color == self.color):
             #if AI turn, do heuristics to find next move
@@ -167,6 +168,7 @@ class MCTS():
         jump = 2  # default is 2 since each move consists a list of at least length 2
         temp = 0
         king_flag = False  # set to true if a piece can be made a king
+        safeMoves = []
         for move in chosenChild.moves:
             if len(move) > jump:
                 temp = move
@@ -175,8 +177,22 @@ class MCTS():
                 temp = move
                 jump = len(move)
                 king_flag = True
-        if temp != 0 or king_flag:
+            if temp == 0:
+                # check to make a defensive move
+                eNextMoves = chosenChild.board.get_all_possible_moves(chosenChild.opponent_color)
+                # do not move to places where the enemy can move to, avoid being eaten
+                enemyMoves = []
+                for pieces in range(len(eNextMoves)):
+                    for positions in range(len(eNextMoves[pieces])):
+                        enemyMoves.append(eNextMoves[pieces][positions])
+                for eMove in enemyMoves:
+                    if move[1] != eMove[1]:
+                        safeMoves.append(move)
+        if temp != 0 or king_flag: #if multiple kills or can king
             bestmove = temp
+            return bestmove
+        elif len(safeMoves) != 0: #play safe move
+            bestmove = random.choice(safeMoves)
             return bestmove
         else:
             bestmove = random.choice(chosenChild.moves)
