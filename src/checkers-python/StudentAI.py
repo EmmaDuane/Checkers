@@ -91,11 +91,11 @@ class MCTS():
         minWins = 0;
         bestMove = random.choice(self.root.children)
         for x in self.root.children:
-            print(x.wins)
+            #print(x.wins)
             if x.wins < minWins:
                 minWins = x.wins
                 bestMove = x
-        print("Best Move is: ",bestMove.move, bestMove.wins)
+        #print("Best Move is: ",bestMove.move, bestMove.wins)
         return bestMove
 
     def expand_node(self, node):
@@ -185,9 +185,12 @@ class MCTS():
                 for pieces in range(len(eNextMoves)):
                     for positions in range(len(eNextMoves[pieces])):
                         enemyMoves.append(eNextMoves[pieces][positions])
+                safe = True;
                 for eMove in enemyMoves:
                     if move[1] != eMove[1]:
-                        safeMoves.append(move)
+                        safe = False;
+                if safe:
+                    safeMoves.append(move)
         if temp != 0 or king_flag: #if multiple kills or can king
             bestmove = temp
             return bestmove
